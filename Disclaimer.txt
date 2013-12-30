@@ -1,0 +1,6 @@
+~~Disclaimer.Txt~~
+
+Most of the code in this plugin was originally made by InanZen.
+I have merely reworked it to have different functionality and use.
+
+All credit goes to InanZen for making the AutoBoss Spawner plugin in the first place.
