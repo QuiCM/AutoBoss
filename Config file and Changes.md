@@ -1,11 +1,15 @@
 ChangeLog:
 --------------
-*v1.1.3*- Changed default layout to stop crash OnUpdate.
-*V1.1.4*- Changed OnUpdate section so layout shouldn't matter.
-*v1.1.5*- Updated to ApiVersion(1, 14); Now works on Terraria 1.2
-*v1.2*- Should now be able to support infinite arenas. 
-    - No longer needs 'arena' as default region
-    - Cleaned up (some) messy code, may function better now
+* *v1.1.3*
+*Changed default layout to stop crash OnUpdate.
+* *V1.1.4*
+* Changed OnUpdate section so layout shouldn't matter.
+* *v1.1.5*
+* Updated to ApiVersion(1, 14); Now works on Terraria 1.2
+* *v1.2*
+* Should now be able to support infinite arenas. 
+* No longer needs 'arena' as default region
+* Cleaned up (some) messy code, may function better now
 *v2[.5]*- Major modifications
 * Rename from BossSpawner2 to AutoBoss+
 * Removed usage of OnUpdate; replaced with System.Timers
