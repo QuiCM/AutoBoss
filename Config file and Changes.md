@@ -1,16 +1,21 @@
 ChangeLog:
---------------
-* *v1.1.3*
-*Changed default layout to stop crash OnUpdate.
-* *V1.1.4*
+============
+ *v1.1.3
+----------
+* Changed default layout to stop crash OnUpdate.
+ *v1.1.4*
+----------
 * Changed OnUpdate section so layout shouldn't matter.
-* *v1.1.5*
+ *v1.1.5*
+----------
 * Updated to ApiVersion(1, 14); Now works on Terraria 1.2
-* *v1.2*
+ *v1.2*
+--------
 * Should now be able to support infinite arenas. 
 * No longer needs 'arena' as default region
 * Cleaned up (some) messy code, may function better now
 *v2[.5]*- Major modifications
+------------------------------
 * Rename from BossSpawner2 to AutoBoss+
 * Removed usage of OnUpdate; replaced with System.Timers
 * Added more error notification when /boss reload fails
@@ -23,6 +28,7 @@ ChangeLog:
 * Fixed failed lists
 * [Untested] Fixed timer still counting while bosses are alive, and then spawning more (even if the battle is not finished)
 *v2[.5].1*
+-----------
 * Added a region check for bosses that triggers every 3 seconds: If they're not in any of the boss regions, it will
  teleport them back to the first boss region in the config list.
 * In addition to this, if the bosses are teleported x times (config defined), the battle is ended and the bosses are killed.
