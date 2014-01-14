@@ -69,20 +69,21 @@ namespace Auto_Boss
         /* What happens when the tick (Boss_Tools.boss_Config defined option)seconds passes */
         public static void boss_Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            foreach (NPC boss in Boss_Tools.boss_List)
-                if (!Main.npc.Contains(boss))
-                    Boss_Tools.boss_List.Remove(boss);
-
-            if (Boss_Tools.boss_List.Count < 1)
-            {
-                Boss_Events.Bosses_Active = false;
-                EndBattle();
-                TSPlayer.All.SendInfoMessage("[AutoBoss+] debug: Battle ended due to boss list being empty");
-            }
-
             /* To stop the timer while bosses are still spawned. */
             if (Boss_Events.Bosses_Active)
+            {
+                foreach (NPC boss in Boss_Tools.boss_List)
+                    if (!Main.npc.Contains(boss))
+                        Boss_Tools.boss_List.Remove(boss);
+
+                if (Boss_Tools.boss_List.Count < 1)
+                {
+                    Boss_Events.Bosses_Active = false;
+                    EndBattle();
+                    TSPlayer.All.SendInfoMessage("[AutoBoss+] debug: Battle ended due to boss list being empty");
+                }
                 return;
+            }
             /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
             /* Disable the timer if the toggle is turned off */ 
