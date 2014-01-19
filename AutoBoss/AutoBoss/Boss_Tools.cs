@@ -154,6 +154,8 @@ namespace Auto_Boss
                 else 
                     Boss_Timer.specialMinionEnabled = false;
             }
+
+            arena_Count = Active_Arenas.Count;
         }
 
         #region PostInitialize

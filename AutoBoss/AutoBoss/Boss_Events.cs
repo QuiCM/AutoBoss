@@ -133,9 +133,7 @@ namespace Auto_Boss
         public static void start_DayMinion_Spawns()
         {
             var m = Boss_Tools.boss_Config.Day_MinionList[rnd_Num.Next(0, Boss_Tools.boss_Config.Day_MinionList.Count)];
-
-            int henchmenNumber = rnd_Num.Next(m.amt / 2, (int)((m.amt * 2) /  1.5));
-
+            
             int npcID = -1;
             foreach (Region region in Boss_Tools.Active_Arenas)
             {
@@ -154,7 +152,7 @@ namespace Auto_Boss
 
             if (Boss_Tools.boss_Config.Announce_Minions)
             {
-                TSPlayer.All.SendMessage("Spawning Minions: " + henchmenNumber * Boss_Tools.arena_Count + "x " +
+                TSPlayer.All.SendMessage("Spawning Minions: " + m.amt * Boss_Tools.arena_Count + "x " +
                     npc.name + "!", Color.CadetBlue);
             }
         }
