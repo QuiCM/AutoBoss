@@ -20,10 +20,11 @@ namespace Auto_Boss
 
         public static string invalid_Regions = "";
 
-        public static List<NPC> boss_List = new List<NPC>();
+        public static List<int> boss_List = new List<int>();
         public static List<NPC> minion_List = new List<NPC>();
 
         public static List<Region> Active_Arenas = new List<Region>();
+        public static List<string> Inactive_Arenas = new List<string>();
         public static int arena_Count = 0;
 
         public static bool Bosses_Toggled = false;
@@ -34,7 +35,6 @@ namespace Auto_Boss
             bool success = false;
             List<string> commandExceptions = new List<string>();
             List<string> logExceptions = new List<string>();
-            List<string> inactiveArenas = new List<string>();
 
             try
             {
@@ -60,19 +60,46 @@ namespace Auto_Boss
                                 {
                                     invalid_Regions += (invalid_Regions.Length > 0 ? ", " : "") + pair.Key;
 
-                                    commandExceptions.Add("Invalid Regions: " + invalid_Regions);
+                                    success = false;
+                                }
+                            }
+                            else
+                            {
+                                if (!Inactive_Arenas.Contains(pair.Key))
+                                    Inactive_Arenas.Add(pair.Key);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (KeyValuePair<string, bool> pair in boss_Config.Boss_Arenas)
+                        {
+                            if (pair.Value == true)
+                            {
+                                if (TShock.Regions.GetRegionByName(pair.Key) != null)
+                                {
+                                    if (!Active_Arenas.Contains(TShock.Regions.GetRegionByName(pair.Key)))
+                                        Active_Arenas.Add(TShock.Regions.GetRegionByName(pair.Key));
 
-                                    invalid_Regions = string.Empty;
+                                    success = true;
+                                }
+
+                                else
+                                {
+                                    invalid_Regions += (invalid_Regions.Length > 0 ? ", " : "") + pair.Key;
 
                                     success = false;
                                 }
                             }
                             else
                             {
-                                if (!inactiveArenas.Contains(pair.Key))
-                                    inactiveArenas.Add(pair.Key);
+                                if (!Inactive_Arenas.Contains(pair.Key))
+                                    Inactive_Arenas.Add(pair.Key);
                             }
                         }
+
+                        commandExceptions.Add("Invalid Regions: " + invalid_Regions);
+                        invalid_Regions = string.Empty;
                     }
                 }
                 else { boss_Config.Write(config_Path); }
@@ -92,12 +119,7 @@ namespace Auto_Boss
             if (success == false)
             {
                 if (commandRun)
-                {
                     SendMultipleErrors(false, receiver, commandExceptions);
-                    receiver.SendErrorMessage("Reload failed: No active arenas");
-                    receiver.SendErrorMessage("You have " + inactiveArenas.Count + " inactive arenas: {0}",
-                        string.Join(", ", inactiveArenas));
-                }
 
                 if (!commandRun)
                     SendMultipleErrors(true, null, logExceptions);
@@ -175,39 +197,6 @@ namespace Auto_Boss
         }
         #endregion
 
-        #region Boss&Minion slayers
-        public static void Kill_Bosses()
-        {
-            for (int i = 0; i < Main.maxNPCTypes; i++)
-                for (int j = 0; j < boss_List.Count; j++)
-                    if (!Main.npc[i].active && boss_List[j].type == i)
-                    {
-                        TSPlayer.Server.StrikeNPC(i, Main.npc[i].lifeMax * Main.npc[i].defense, 1f, 1);
-                        boss_List.RemoveAt(j);
-                    }
-            boss_List.Clear();
-        }
-
-        public static void Kill_Boss(int i)
-        {
-            TSPlayer.Server.StrikeNPC(i, Main.npc[i].lifeMax * Main.npc[i].defense, 1f, 1);
-            try { boss_List.Remove(Main.npc[i]); }
-            catch { }
-        }
-
-        public static void Kill_Minions()
-        {
-            for (int i = 0; i < Main.maxNPCTypes; i++)
-                for (int j = 0; j < minion_List.Count; j++)
-                    if (!Main.npc[i].active && minion_List[j].type == i)
-                    {
-                        TSPlayer.Server.StrikeNPC(i, Main.npc[i].lifeMax * Main.npc[i].defense, 1f, 1);
-                        minion_List.RemoveAt(j);
-                    }
-            minion_List.Clear();
-        }
-        #endregion
-        
         #region MultipleError
         public static void SendMultipleErrors(bool console = false, TSPlayer receiver = null, List<string> errors = null)
         {
@@ -218,7 +207,7 @@ namespace Auto_Boss
                 else
                 {
                     receiver.SendErrorMessage("Multiple errors found on reloading:");
-                    receiver.SendErrorMessage("{0}", string.Join(", ", errors));
+                    receiver.SendErrorMessage("'{0}'", string.Join("', '", errors));
                 }
             }
             else if (errors.Count == 1)

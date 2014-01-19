@@ -148,7 +148,7 @@ namespace Auto_Boss
 
         public List<message_Obj> Message_Colours = new List<message_Obj>()
         { 
-            new message_Obj(255, 255, 255, "[Note] Please do not change the case or names of these values", false),
+            new message_Obj(255, 255, 255, "[WARNING] Please do not change the case or names of these values", false),
 
             new message_Obj(255, 255, 255, "day", false),
             new message_Obj(255, 255, 255, "night", false),
@@ -171,6 +171,7 @@ namespace Auto_Boss
             "[Day] Etc",
             "[Day] Bosses spawning" 
         };
+        public string DayTimer_Finished = "Boss battle complete.";
 
         public bool Enable_NightTimer_Text = false;
         public string[] NightTimer_Text =
@@ -184,6 +185,7 @@ namespace Auto_Boss
             "[Night] Etc",
             "[Night] Bosses spawning"  
         };
+        public string NightTimer_Finished = "Boss battle complete.";
 
         public bool Enable_SpecialTimer_Text = false;
         public string[] SpecialTimer_Text =
@@ -197,6 +199,7 @@ namespace Auto_Boss
             "[Special] Etc",
             "[Special] Bosses spawning" 
         };
+        public string SpecialTimer_Finished = "Boss battle complete.";
 
         public bool Announce_Minions = false;
         public int[] Minions_Spawn_Timer = new int[2] { 10, 30 };

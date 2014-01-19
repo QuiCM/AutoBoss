@@ -19,24 +19,24 @@ namespace Auto_Boss
         #region Day_Battle
         public static void start_BossBattle_Day()
         {
-            NPC npc = new NPC();
-
             string broadcastString = "Boss selected:";
             Day_Boss_Set day_Bosses = Boss_Tools.boss_Config.Day_BossList[rnd_Num.Next(0, 
                 Boss_Tools.boss_Config.Day_BossList.Count)];
 
-            var bosses = new List<NPC>();
+            var bosses = new List<int>();
             foreach (Day_Boss_Obj b in day_Bosses.day_Bosses)
             {
-                npc = TShock.Utils.GetNPCById(b.id);
-                bosses.Add(npc);
-
+                int npcID = -1;
                 foreach (Region region in Boss_Tools.Active_Arenas)
                 {
                     int arenaX = region.Area.X + (region.Area.Width / 2);
                     int arenaY = region.Area.Y + (region.Area.Height / 2);
-                    TSPlayer.Server.SpawnNPC(npc.type, npc.name, b.amt, arenaX, arenaY, 30, 30);
+
+                   npcID = NPC.NewNPC(arenaX * 16, arenaY * 16, b.id);
                 }
+
+                NPC npc = Main.npc[npcID];
+                bosses.Add(npcID);
 
                 broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
             }
@@ -53,25 +53,25 @@ namespace Auto_Boss
         #region Special_Battle
         public static void start_BossBattle_Special()
         {
-            NPC npc = new NPC();
-
-            string broadcastString = "Boss selected:";
+                        string broadcastString = "Boss selected:";
 
             Special_Boss_Set special_Bosses = Boss_Tools.boss_Config.Special_BossList[rnd_Num.Next(0,
                 Boss_Tools.boss_Config.Special_BossList.Count)];
 
-            var bosses = new List<NPC>();
+            var bosses = new List<int>();
             foreach (Special_Boss_Obj b in special_Bosses.special_Bosses)
             {
-                npc = TShock.Utils.GetNPCById(b.id);
-                bosses.Add(npc);
-
+                int npcID = -1;
                 foreach (Region region in Boss_Tools.Active_Arenas)
                 {
                     int arenaX = region.Area.X + (region.Area.Width / 2);
                     int arenaY = region.Area.Y + (region.Area.Height / 2);
-                    TSPlayer.Server.SpawnNPC(npc.type, npc.name, b.amt, arenaX, arenaY, 30, 30);
+
+                    npcID = NPC.NewNPC(arenaX * 16, arenaY * 16, b.id);
                 }
+
+                NPC npc = Main.npc[npcID];
+                bosses.Add(npcID);
 
                 broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
             }
@@ -90,24 +90,24 @@ namespace Auto_Boss
         #region Night_Battle
         public static void start_BossBattle_Night()
         {
-            NPC npc = new NPC();
-
             string broadcastString = "Boss selected:";
             Night_Boss_Set night_Bosses = Boss_Tools.boss_Config.Night_BossList[rnd_Num.Next(0,
                 Boss_Tools.boss_Config.Night_BossList.Count)];
 
-            var bosses = new List<NPC>();
+            var bosses = new List<int>();
             foreach (Night_Boss_Obj b in night_Bosses.night_Bosses)
             {
-                npc = TShock.Utils.GetNPCById(b.id);
-                bosses.Add(npc);
-
+                int npcID = -1;
                 foreach (Region region in Boss_Tools.Active_Arenas)
                 {
                     int arenaX = region.Area.X + (region.Area.Width / 2);
                     int arenaY = region.Area.Y + (region.Area.Height / 2);
-                    TSPlayer.Server.SpawnNPC(npc.type, npc.name, b.amt, arenaX, arenaY, 30, 30);
+
+                    npcID = NPC.NewNPC(arenaX * 16, arenaY * 16, b.id);
                 }
+
+                NPC npc = Main.npc[npcID];
+                bosses.Add(npcID);
 
                 broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
             }

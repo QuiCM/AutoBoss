@@ -79,8 +79,8 @@ namespace Auto_Boss
                                             }
 
                                             List<string> bosses = new List<string>();
-                                            foreach (NPC n in Boss_Tools.boss_List)
-                                                bosses.Add(n.name);
+                                            foreach (int i in Boss_Tools.boss_List)
+                                                bosses.Add(Main.npc[i].name);
 
                                             PaginationTools.SendPage(args.Player, page_Number,
                                                 PaginationTools.BuildLinesFromTerms(bosses), new PaginationTools.Settings

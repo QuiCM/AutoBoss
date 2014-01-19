@@ -52,49 +52,33 @@ namespace Auto_Boss
         public static void boss_Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             bool bossActive = false;
-            for (int i = 0; i < Main.npc.Length; i++)
-            {
+            foreach (int i in Boss_Tools.boss_List)
                 if (Main.npc[i].active)
-                {
-                    if (Boss_Tools.boss_List.Contains(Main.npc[i]))
-                    {
-                        bossActive = true;
-                        Console.WriteLine("NPC {0} is active", Main.npc[i]);
-                    }
-                }
-            }
-            Console.WriteLine("Boss active: " + bossActive);
+                    bossActive = true;
 
-            /* Disable the timer if the toggle is turned off */
             if (!Boss_Tools.Bosses_Toggled)
             {
                 Log.ConsoleInfo("[AutoBoss+] Timer Disabled: Boss toggle disabled");
                 boss_Timer.Enabled = false;
-                boss_Timer.Elapsed -= boss_Timer_Elapsed;
                 Boss_Tools.Bosses_Toggled = false;
                 ticker.count = -1;
                 return;
             }
-            /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
-            /* Disable the timer if there are no players online / 
             if (TShock.Players[0] == null && TShock.Players.Length == 0)
             {
                 Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players online");
                 boss_Timer.Enabled = false;
-                boss_Timer.Elapsed -= boss_Timer_Elapsed;
                 Boss_Tools.Bosses_Toggled = false;
-                resetTicks();
+                ticker.count = -1;
                 return;
             }
-            /  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
             if (Main.dayTime && dayBossEnabled && !ticker.enabled)
             {
                 ticker.type = "day";
                 ticker.maxCount = Boss_Tools.boss_Config.DayTimer_Text.Length - 1;
                 ticker.enabled = true;
-                Console.WriteLine("Timer set to day");
             }
             if (!Main.dayTime && !Main.raining && !Main.bloodMoon && !Main.eclipse && !Main.pumpkinMoon &&
                 !Main.snowMoon && Main.invasionType == 0 && nightBossEnabled && !ticker.enabled)
@@ -102,7 +86,6 @@ namespace Auto_Boss
                 ticker.type = "night";
                 ticker.maxCount = Boss_Tools.boss_Config.NightTimer_Text.Length - 1;
                 ticker.enabled = true;
-                Console.WriteLine("Timer set to Night");
             }
 
             if (Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
@@ -111,24 +94,18 @@ namespace Auto_Boss
                 ticker.type = "special";
                 ticker.maxCount = Boss_Tools.boss_Config.SpecialTimer_Text.Length - 1;
                 ticker.enabled = true;
-                Console.WriteLine("Timer set to Special");
             }
 
             if (ticker.enabled)
             {
-                Console.WriteLine("Timer is enabled");
-                Console.WriteLine(ticker.count);
                 if (!bossActive)
                 {
                     ticker.count++;
-                    Console.WriteLine(ticker.count + "/" + ticker.maxCount);
 
                     if (ticker.type == "day")
                     {
                         if (Boss_Tools.boss_Config.Enable_DayTimer_Text)
                         {
-                            Console.WriteLine("Ticker type: Day. Day text enabled: {0}", Boss_Tools.boss_Config.Enable_DayTimer_Text);
-
                             if (ticker.count != ticker.maxCount)
                                 TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.count]);
 
@@ -140,7 +117,9 @@ namespace Auto_Boss
                                 //    startMinionTimer();
 
                                 Boss_Events.start_BossBattle_Day();
-                                ticker.count = -1;
+
+                                if (Boss_Tools.boss_Config.Continuous_Boss)
+                                    ticker.count = -1;
                             }
                         }
                     }
@@ -148,7 +127,6 @@ namespace Auto_Boss
                     {
                         if (Boss_Tools.boss_Config.Enable_NightTimer_Text)
                         {
-                            Console.WriteLine("Ticker type: Night. Night text enabled: {0}", Boss_Tools.boss_Config.Enable_NightTimer_Text);
                             if (ticker.count != ticker.maxCount)
                                 TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.count]);
 
@@ -167,7 +145,6 @@ namespace Auto_Boss
                     if (ticker.type == "special")
                     {
                         if (Boss_Tools.boss_Config.Enable_SpecialTimer_Text)
-                            Console.WriteLine("Ticker type: Special. Special text enabled: {0}", Boss_Tools.boss_Config.Enable_SpecialTimer_Text);
                         {
                             if (ticker.count != ticker.maxCount)
                                 TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.count]);
@@ -186,7 +163,6 @@ namespace Auto_Boss
                     }
                 }
             }
-            Console.WriteLine("Tick");
         }
 
         public static void startMinionTimer()

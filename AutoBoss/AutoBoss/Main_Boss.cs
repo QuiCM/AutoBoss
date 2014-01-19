@@ -66,6 +66,8 @@ namespace Auto_Boss
         #region OnInitialize
         public void OnInitialize(EventArgs args)
         {
+            Boss_Timer.boss_Timer.Elapsed += new System.Timers.ElapsedEventHandler(Boss_Timer.boss_Timer_Elapsed);
+
             Commands.ChatCommands.Add(new Command("boss.root", Boss_Commands.Boss_Command, "boss")
                 {
                     HelpText = "Toggles automatic boss spawns; Reloads the configuration; Lists bosses and minions spawned by the plugin"
@@ -78,9 +80,9 @@ namespace Auto_Boss
         public void OnGreet(GreetPlayerEventArgs args)
         {
             if (Boss_Tools.boss_Config.AutoStart_Enabled)
-                if (TShock.Players[0].Index == args.Who)
+                if (TShock.Players[0].Index == args.Who && TShock.Players.Length < 2)
                     if (!Boss_Timer.boss_Timer.Enabled)
-                        Boss_Timer.Run();
+                        Boss_Timer.boss_Timer.Enabled = true;
         }
         #endregion
     }
