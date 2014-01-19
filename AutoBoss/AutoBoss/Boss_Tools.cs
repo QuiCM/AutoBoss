@@ -18,7 +18,7 @@ namespace Auto_Boss
         public static Boss_Config boss_Config { get; set; }
         public static string config_Path { get { return Path.Combine(TShock.SavePath, "Boss_Config.json"); } }
 
-        public static string invalid_Regions = "";
+        public static string invalid_Regions = string.Empty;
 
         public static Dictionary<int, int> boss_List = new Dictionary<int, int>();
         public static List<NPC> minion_List = new List<NPC>();
@@ -77,9 +77,46 @@ namespace Auto_Boss
         }*/
         #endregion
 
-        public static void reloadConfig()
+        public static void reloadConfig(bool console = false, TSPlayer receiver = null)
         {
             (boss_Config = Boss_Config.Read(config_Path)).Write(config_Path);
+
+            foreach (KeyValuePair<string, bool> pair in boss_Config.Boss_Arenas)
+            {
+                if (pair.Value)
+                {
+                    if (TShock.Regions.GetRegionByName(pair.Key) != null)
+                    {
+                        if (!Active_Arenas.Contains(TShock.Regions.GetRegionByName(pair.Key)))
+                            Active_Arenas.Add(TShock.Regions.GetRegionByName(pair.Key));
+                    }
+                    else
+                        invalid_Regions += (invalid_Regions.Length > 0 ? "', '" : "'") + pair.Key;
+                }
+                else
+                    if (!Inactive_Arenas.Contains(pair.Key))
+                        Inactive_Arenas.Add(pair.Key);
+            }
+
+            foreach (string arena in Inactive_Arenas)
+            {
+                if (!boss_Config.Boss_Arenas.ContainsKey(arena))
+                {
+                    Inactive_Arenas.Remove(arena);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(invalid_Regions))
+            {
+                invalid_Regions = invalid_Regions + "'";
+
+                if (console)
+                    TSServerPlayer.Server.SendErrorMessage("[AutoBoss+] Invalid regions found: {0}", invalid_Regions);
+                else if (receiver != null)
+                    receiver.SendErrorMessage("[AutoBoss+] Invalid regions found: {0}", invalid_Regions);
+            }
+
+            invalid_Regions = string.Empty;
         }
 
         #region PostInitialize

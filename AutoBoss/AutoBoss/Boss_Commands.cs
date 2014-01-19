@@ -55,7 +55,10 @@ namespace Auto_Boss
                         {
                             //args.Player.SendSuccessMessage((Boss_Tools.SetupConfig(true, args.Player) ? "S" : "Uns") +
                             //    "uccessfully reloaded the Boss_Tools.boss_Configuration file");
-                            Boss_Tools.reloadConfig();
+                            if (args.Player == TSPlayer.Server)
+                                Boss_Tools.reloadConfig(true);
+                            else
+                                Boss_Tools.reloadConfig(false, args.Player);
                             args.Player.SendSuccessMessage("Reloaded Boss_Config.json");
                             break;
                         }
