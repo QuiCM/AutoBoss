@@ -72,7 +72,7 @@ namespace Auto_Boss
                 {
                     HelpText = "Toggles automatic boss spawns; Reloads the configuration; Lists bosses and minions spawned by the plugin"
                 });
-            Boss_Tools.SetupConfig();
+            Boss_Tools.reloadConfig();
         }
         #endregion
 

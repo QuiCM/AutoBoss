@@ -129,39 +129,55 @@ namespace Auto_Boss
         public int Message_Interval = 10;
 
         public bool Enable_DayTimer_Text = false;
-        public string[] DayTimer_Text = { };
-        public string DayTimer_Finished;
+        public string[] DayTimer_Text =
+        {
+            "[Note] These messages are printed in-game in the order they are placed in this config file",
+            "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
+            "[Note] All pieces of text in this section can be modified, deleted etc.",
+            "[Day] Initial message",
+            "[Day] Secondary message",
+            "[Day] Third message",
+            "[Day] Etc",
+            "[Day] Bosses spawning"
+        };
+        public string DayTimer_Finished = "Boss battle complete.";
 
         public bool Enable_NightTimer_Text = false;
-        public string[] NightTimer_Text = { };
-        public string NightTimer_Finished;
+        public string[] NightTimer_Text =
+        {
+            "[Note] These messages are printed in-game in the order they are placed in this config file",
+            "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
+            "[Note] All pieces of text in this section can be modified, deleted etc.",
+            "[Night] Initial message",
+            "[Night] Secondary message",
+            "[Night] Third message",
+            "[Night] Etc",
+            "[Night] Bosses spawning"
+        };
+        public string NightTimer_Finished = "Boss battle complete.";
 
         public bool Enable_SpecialTimer_Text = false;
-        public string[] SpecialTimer_Text = { };
-        public string SpecialTimer_Finished;
+        public string[] SpecialTimer_Text =
+        { 
+            "[Note] These messages are printed in-game in the order they are placed in this config file",
+            "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
+            "[Note] All pieces of text in this section can be modified, deleted etc.",
+            "[Special] Initial message",
+            "[Special] Secondary message",
+            "[Special] Third message",
+            "[Special] Etc",
+            "[Special] Bosses spawning"
+        };
+        public string SpecialTimer_Finished = "Boss battle complete.";
 
         public bool Announce_Minions = false;
         public int[] Minions_Spawn_Timer = new int[2] { 10, 30 };
 
         public Dictionary<string, bool> Boss_Arenas = new Dictionary<string, bool>();
 
-        public List<Toggle_Obj> Boss_Toggles = new List<Toggle_Obj>()
-        {
-            new Toggle_Obj("[WARNING] Please do not change the case or names of these values", false),
+        public List<Toggle_Obj> Boss_Toggles;
 
-            new Toggle_Obj("day", false),
-            new Toggle_Obj("night", false),
-            new Toggle_Obj("special", false)
-        };
-
-        public List<Toggle_Obj> Minion_Toggles = new List<Toggle_Obj>()
-        {
-            new Toggle_Obj("[WARNING] Please do not change the case or names of these values", false),
-
-            new Toggle_Obj("day", false),
-            new Toggle_Obj("night", false),
-            new Toggle_Obj("special", false)
-        };
+        public List<Toggle_Obj> Minion_Toggles;
 
         /* Now has much nicer formatting & names */
         public List<Day_Boss_Set> Day_BossList;
@@ -173,123 +189,18 @@ namespace Auto_Boss
         public List<Special_Boss_Set> Special_BossList;
         public List<Special_Minion_Obj> Special_MinionList;
 
-
+        public void Write(string path)
+        {
+            File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented));
+        }
 
         public static Boss_Config Read(string path)
         {
             if (!File.Exists(path))
                 return new Boss_Config();
-            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                return Read(fs);
-            }
+            return JsonConvert.DeserializeObject<Boss_Config>(File.ReadAllText(path));
         }
 
-        public static Boss_Config Read(Stream stream)
-        {
-            using (var sr = new StreamReader(stream))
-            {
-                var cf = JsonConvert.DeserializeObject<Boss_Config>(sr.ReadToEnd());
-                if (ConfigRead != null)
-                    ConfigRead(cf);
-                return cf;
-            }
-        }
-
-        public void Write(string path)
-        {
-            using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write))
-            {
-                Write(fs);
-            }
-        }
-
-        public void Write(Stream stream)
-        {
-            /* Night bosses */
-            {
-                Night_BossList = new List<Night_Boss_Set>();
-                List<Night_Boss_Obj> night_Bosses = new List<Night_Boss_Obj>();
-                night_Bosses.Add(new Night_Boss_Obj(4, 5));
-                Night_BossList.Add(new Night_Boss_Set(night_Bosses));
-
-                night_Bosses = new List<Night_Boss_Obj>();
-                night_Bosses.Add(new Night_Boss_Obj(134, 1));
-                Night_BossList.Add(new Night_Boss_Set(night_Bosses));
-
-                night_Bosses = new List<Night_Boss_Obj>();
-                night_Bosses.Add(new Night_Boss_Obj(125, 1));
-                night_Bosses.Add(new Night_Boss_Obj(126, 1));
-                Night_BossList.Add(new Night_Boss_Set(night_Bosses));
-
-                night_Bosses = new List<Night_Boss_Obj>();
-                night_Bosses.Add(new Night_Boss_Obj(127, 1));
-                Night_BossList.Add(new Night_Boss_Set(night_Bosses));
-
-                night_Bosses = new List<Night_Boss_Obj>();
-                night_Bosses.Add(new Night_Boss_Obj(134, 2));
-                Night_BossList.Add(new Night_Boss_Set(night_Bosses));
-
-                night_Bosses = new List<Night_Boss_Obj>();
-                night_Bosses.Add(new Night_Boss_Obj(50, 5));
-                Night_BossList.Add(new Night_Boss_Set(night_Bosses));
-            }
-
-            /* Day Bosses */
-            {
-                Day_BossList = new List<Day_Boss_Set>();
-                List<Day_Boss_Obj> day_Bosses = new List<Day_Boss_Obj>();
-                day_Bosses.Add(new Day_Boss_Obj(50, 5));
-                Day_BossList.Add(new Day_Boss_Set(day_Bosses));
-
-                day_Bosses = new List<Day_Boss_Obj>();
-                day_Bosses.Add(new Day_Boss_Obj(50, 1));
-                Day_BossList.Add(new Day_Boss_Set(day_Bosses));
-
-                day_Bosses = new List<Day_Boss_Obj>();
-                day_Bosses.Add(new Day_Boss_Obj(87, 12));
-                Day_BossList.Add(new Day_Boss_Set(day_Bosses));
-
-                day_Bosses = new List<Day_Boss_Obj>();
-                day_Bosses.Add(new Day_Boss_Obj(143, 10));
-                day_Bosses.Add(new Day_Boss_Obj(144, 5));
-                day_Bosses.Add(new Day_Boss_Obj(145, 15));
-                Day_BossList.Add(new Day_Boss_Set(day_Bosses));
-
-                day_Bosses = new List<Day_Boss_Obj>();
-                day_Bosses.Add(new Day_Boss_Obj(87, 2));
-                Day_BossList.Add(new Day_Boss_Set(day_Bosses));
-            }
-
-            /* Special bosses */
-            {
-                Special_BossList = new List<Special_Boss_Set>();
-                List<Special_Boss_Obj> special_Bosses = new List<Special_Boss_Obj>();
-                special_Bosses.Add(new Special_Boss_Obj(1, 10));
-                Special_BossList.Add(new Special_Boss_Set(special_Bosses));
-            }
-
-            /* Minions */
-            {
-                Day_Minionlist = new List<Day_Minion_Obj>();
-                Day_Minionlist.Add(new Day_Minion_Obj(1, 1));
-                Day_Minionlist.Add(new Day_Minion_Obj(2, 1));
-
-                Night_MinionList = new List<Night_Minion_Obj>();
-                Night_MinionList.Add(new Night_Minion_Obj(1, 1));
-                Night_MinionList.Add(new Night_Minion_Obj(2, 1));
-
-                Special_MinionList = new List<Special_Minion_Obj>();
-                Special_MinionList.Add(new Special_Minion_Obj(1, 1));
-                Special_MinionList.Add(new Special_Minion_Obj(2, 1));
-            }
-
-            var str = JsonConvert.SerializeObject(this, Formatting.Indented);
-            using (var sw = new StreamWriter(stream))
-            {
-                sw.Write(str);
-            }
-        }
         public static Action<Boss_Config> ConfigRead;
     }
 }
