@@ -20,7 +20,7 @@ namespace Auto_Boss
 
         public static string invalid_Regions = "";
 
-        public static List<int> boss_List = new List<int>();
+        public static Dictionary<int, int> boss_List = new Dictionary<int, int>();
         public static List<NPC> minion_List = new List<NPC>();
 
         public static List<Region> Active_Arenas = new List<Region>();
@@ -194,6 +194,7 @@ namespace Auto_Boss
                 if (t.type == "special" && t.enabled)
                     Boss_Timer.specialMinionEnabled = true;
             }
+
         }
         #endregion
 

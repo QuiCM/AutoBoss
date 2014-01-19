@@ -108,24 +108,6 @@ namespace Auto_Boss
     }
     #endregion
 
-    public class message_Obj
-    {
-        public byte red;
-        public byte green;
-        public byte blue;
-        public string type;
-        public bool useCustomColor;
-
-        public message_Obj(byte r, byte g, byte b, string t, bool use)
-        {
-            red = r;
-            green = g;
-            blue = b;
-            type = t;
-            useCustomColor = use;
-        }
-    }
-
     public class Toggle_Obj
     {
         public string type;
@@ -145,19 +127,6 @@ namespace Auto_Boss
         public bool Continuous_Boss = false;
 
         public int Message_Interval = 10;
-
-        public List<message_Obj> Message_Colours = new List<message_Obj>()
-        { 
-            new message_Obj(255, 255, 255, "[WARNING] Please do not change the case or names of these values", false),
-
-            new message_Obj(255, 255, 255, "day", false),
-            new message_Obj(255, 255, 255, "night", false),
-            new message_Obj(255, 255, 255, "special", false), 
-            new message_Obj(255, 255, 255, "minion", false),
-            new message_Obj(255, 255, 255, "boss", false),
-            new message_Obj(255, 255, 255, "command", false),
-            new message_Obj(255, 255, 255, "message", false)
-        };
 
         public bool Enable_DayTimer_Text = false;
         public string[] DayTimer_Text =
@@ -208,7 +177,7 @@ namespace Auto_Boss
 
         public List<Toggle_Obj> Boss_Toggles = new List<Toggle_Obj>()
         {
-            new Toggle_Obj("[Note] Please do not change the case or names of these values", false),
+            new Toggle_Obj("[WARNING] Please do not change the case or names of these values", false),
 
             new Toggle_Obj("day", false),
             new Toggle_Obj("night", false),
@@ -217,7 +186,7 @@ namespace Auto_Boss
 
         public List<Toggle_Obj> Minion_Toggles = new List<Toggle_Obj>()
         {
-            new Toggle_Obj("[Note] Please do not change the case or names of these values", false),
+            new Toggle_Obj("[WARNING] Please do not change the case or names of these values", false),
 
             new Toggle_Obj("day", false),
             new Toggle_Obj("night", false),

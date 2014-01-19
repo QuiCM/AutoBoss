@@ -41,19 +41,12 @@ namespace Auto_Boss
         public static bool MinionTimerRunning = false;
 
         internal static timerObj ticker = new timerObj(-1, "day", false, 10);
-
-
-        public static void Run()
-        {
-            boss_Timer.Enabled = true;
-            boss_Timer.Elapsed += boss_Timer_Elapsed;
-        }
-
+        
         public static void boss_Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             bool bossActive = false;
-            foreach (int i in Boss_Tools.boss_List)
-                if (Main.npc[i].active)
+            foreach (KeyValuePair<int, int> pair in Boss_Tools.boss_List)
+                if (Main.npc[pair.Key].type == pair.Value && Main.npc[pair.Key].active)
                     bossActive = true;
 
             if (!Boss_Tools.Bosses_Toggled)
@@ -107,11 +100,13 @@ namespace Auto_Boss
                         if (Boss_Tools.boss_Config.Enable_DayTimer_Text)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.count]);
+                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.count],
+                                    Color.YellowGreen);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.maxCount]);
+                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.maxCount],
+                                    Color.Crimson);
 
                                 //if (!MinionTimerRunning)
                                 //    startMinionTimer();
@@ -122,7 +117,8 @@ namespace Auto_Boss
                                     ticker.count = -1;
                                 else
                                 {
-                                    TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.DayTimer_Finished);
+                                    TSPlayer.All.SendMessage(Boss_Tools.boss_Config.DayTimer_Finished,
+                                        Color.LightBlue);
                                     boss_Timer.Enabled = false;
                                 }
                             }
@@ -133,11 +129,13 @@ namespace Auto_Boss
                         if (Boss_Tools.boss_Config.Enable_NightTimer_Text)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.count]);
+                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.count],
+                                    Color.DarkMagenta);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.maxCount]);
+                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.maxCount],
+                                   Color.Crimson);
 
                                 //if (!MinionTimerRunning)
                                 //    startMinionTimer();
@@ -147,7 +145,8 @@ namespace Auto_Boss
                                     ticker.count = -1;
                                 else
                                 {
-                                    TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.NightTimer_Finished);
+                                    TSPlayer.All.SendMessage(Boss_Tools.boss_Config.NightTimer_Finished,
+                                        Color.LightBlue);
                                     boss_Timer.Enabled = false;
                                 }
                             }
@@ -158,11 +157,13 @@ namespace Auto_Boss
                         if (Boss_Tools.boss_Config.Enable_SpecialTimer_Text)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.count]);
+                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.count],
+                                   Color.Orange);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.maxCount]);
+                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.maxCount],
+                                    Color.Crimson);
 
                                 //if (!MinionTimerRunning)
                                 //    startMinionTimer();
@@ -172,8 +173,9 @@ namespace Auto_Boss
                                     ticker.count = -1;
                                 else
                                 {
-                                    TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.SpecialTimer_Finished);
                                     boss_Timer.Enabled = false;
+                                    TSPlayer.All.SendMessage(Boss_Tools.boss_Config.SpecialTimer_Finished,
+                                        Color.LightBlue);
                                 }
                             }
                         }

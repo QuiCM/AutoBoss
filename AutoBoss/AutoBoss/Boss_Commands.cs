@@ -40,24 +40,21 @@ namespace Auto_Boss
                                     }
                                 }
 
-                                
+
 
                                 if (!Boss_Timer.boss_Timer.Enabled)
-                                    Boss_Timer.Run();
+                                    Boss_Timer.boss_Timer.Enabled = true;
                             }
 
-                            args.Player.SendMessage(
-                                (Boss_Tools.Bosses_Toggled ? "Enabled" : "Disabled") +
-                                " automatic boss spawnings", CustomColours.comColor
-                                );
+                            args.Player.SendSuccessMessage((Boss_Tools.Bosses_Toggled ? "Enabled" : "Disabled") +
+                                " automatic boss spawnings");
+
                             break;
                         }
                     case "reload":
                         {
-                            args.Player.SendMessage(
-                                (Boss_Tools.SetupConfig(true, args.Player) ? "S" : "Uns") +
-                                "uccessfully reloaded the Boss_Tools.boss_Configuration file", CustomColours.comColor
-                                );
+                            args.Player.SendSuccessMessage((Boss_Tools.SetupConfig(true, args.Player) ? "S" : "Uns") +
+                                "uccessfully reloaded the Boss_Tools.boss_Configuration file");
 
                             break;
                         }
@@ -78,9 +75,10 @@ namespace Auto_Boss
                                                 return;
                                             }
 
-                                            List<string> bosses = new List<string>();
-                                            foreach (int i in Boss_Tools.boss_List)
-                                                bosses.Add(Main.npc[i].name);
+                                            var bosses = new List<string>();
+                                            foreach (KeyValuePair<int, int> pair in Boss_Tools.boss_List)
+                                                if (Main.npc[pair.Key].type == pair.Value && Main.npc[pair.Key].active)
+                                                    bosses.Add(Main.npc[pair.Key].name);
 
                                             PaginationTools.SendPage(args.Player, page_Number,
                                                 PaginationTools.BuildLinesFromTerms(bosses), new PaginationTools.Settings
@@ -152,7 +150,6 @@ namespace Auto_Boss
                             SetupLines.Add("Boss types enabled: " + CheckBossTypes);
                             SetupLines.Add("Minions spawn every " + Boss_Tools.boss_Config.Minions_Spawn_Timer[0] + " to " +
                                 Boss_Tools.boss_Config.Minions_Spawn_Timer[1] + " seconds");
-                            SetupLines.Add("There are currently " + CheckCustomMessages() + " customized message colours in use");
                             SetupLines.Add("Boss countdown timer enabled: " + Boss_Tools.Bosses_Toggled);
                             SetupLines.Add("There " + (Boss_Tools.arena_Count > 1 || Boss_Tools.arena_Count == 0 ? "are" : "is") + " currently " +
                                 Boss_Tools.arena_Count + " active " + (Boss_Tools.arena_Count > 1 || Boss_Tools.arena_Count == 0 ? "arenas" : "arena"));
@@ -187,16 +184,6 @@ namespace Auto_Boss
                         }
                 }
             }
-        }
-
-        public static int CheckCustomMessages(string types = "day night special")
-        {
-            int enabledCustomColours = 0;
-            foreach (message_Obj m in Boss_Tools.boss_Config.Message_Colours)
-                if (m.useCustomColor && !m.type.ToLower().StartsWith("please"))
-                    enabledCustomColours++;
-
-            return enabledCustomColours;
         }
 
         public static string CheckMobTypes

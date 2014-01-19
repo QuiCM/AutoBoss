@@ -23,7 +23,7 @@ namespace Auto_Boss
             Day_Boss_Set day_Bosses = Boss_Tools.boss_Config.Day_BossList[rnd_Num.Next(0, 
                 Boss_Tools.boss_Config.Day_BossList.Count)];
 
-            var bosses = new List<int>();
+            var bosses = new Dictionary<int, int>();
             foreach (Day_Boss_Obj b in day_Bosses.day_Bosses)
             {
                 int npcID = -1;
@@ -36,15 +36,15 @@ namespace Auto_Boss
                 }
 
                 NPC npc = Main.npc[npcID];
-                bosses.Add(npcID);
+                bosses.Add(npcID, b.id);
 
                 broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
             }
 
-            Bosses_Active = true;
+            Boss_Tools.boss_List = bosses;
 
             broadcastString = broadcastString.Remove(broadcastString.Length - 2);
-            TSPlayer.All.SendMessage(broadcastString, CustomColours.bossColor);
+            TSPlayer.All.SendMessage(broadcastString, Color.Crimson);
 
             Console.WriteLine(broadcastString);
         }
@@ -58,7 +58,7 @@ namespace Auto_Boss
             Special_Boss_Set special_Bosses = Boss_Tools.boss_Config.Special_BossList[rnd_Num.Next(0,
                 Boss_Tools.boss_Config.Special_BossList.Count)];
 
-            var bosses = new List<int>();
+            var bosses = new Dictionary<int, int>();
             foreach (Special_Boss_Obj b in special_Bosses.special_Bosses)
             {
                 int npcID = -1;
@@ -71,7 +71,7 @@ namespace Auto_Boss
                 }
 
                 NPC npc = Main.npc[npcID];
-                bosses.Add(npcID);
+                bosses.Add(npcID, b.id);
 
                 broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
             }
@@ -81,7 +81,7 @@ namespace Auto_Boss
             Bosses_Active = true;
 
             broadcastString = broadcastString.Remove(broadcastString.Length - 2);
-            TSPlayer.All.SendMessage(broadcastString, CustomColours.bossColor);
+            TSPlayer.All.SendMessage(broadcastString, Color.Crimson);
 
             Console.WriteLine(broadcastString);
         }
@@ -94,7 +94,7 @@ namespace Auto_Boss
             Night_Boss_Set night_Bosses = Boss_Tools.boss_Config.Night_BossList[rnd_Num.Next(0,
                 Boss_Tools.boss_Config.Night_BossList.Count)];
 
-            var bosses = new List<int>();
+            var bosses = new Dictionary<int, int>();
             foreach (Night_Boss_Obj b in night_Bosses.night_Bosses)
             {
                 int npcID = -1;
@@ -107,7 +107,8 @@ namespace Auto_Boss
                 }
 
                 NPC npc = Main.npc[npcID];
-                bosses.Add(npcID);
+
+                bosses.Add(npcID, b.id);
 
                 broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
             }
@@ -117,7 +118,7 @@ namespace Auto_Boss
             Bosses_Active = true;
 
             broadcastString = broadcastString.Remove(broadcastString.Length - 2);
-            TSPlayer.All.SendMessage(broadcastString, CustomColours.bossColor);
+            TSPlayer.All.SendMessage(broadcastString, Color.Crimson);
 
             Console.WriteLine(broadcastString);
         }
@@ -145,7 +146,7 @@ namespace Auto_Boss
             if (Boss_Tools.boss_Config.Announce_Minions)
             {
                 TSPlayer.All.SendMessage("Spawning Minions: " + henchmenNumber * Boss_Tools.arena_Count + "x " +
-                    npc.name + "!", CustomColours.minionColor);
+                    npc.name + "!", Color.CadetBlue);
             }
 
             Minions_Active = true;
@@ -175,7 +176,7 @@ namespace Auto_Boss
             if (Boss_Tools.boss_Config.Announce_Minions)
             {
                 TSPlayer.All.SendMessage("Spawning Minions: " + henchmenNumber * Boss_Tools.arena_Count + "x " +
-                    npc.name + "!", CustomColours.minionColor);
+                    npc.name + "!", Color.CadetBlue);
             }
 
             Minions_Active = true;
@@ -204,7 +205,7 @@ namespace Auto_Boss
             if (Boss_Tools.boss_Config.Announce_Minions)
             {
                 TSPlayer.All.SendMessage("Spawning Minions: " + henchmenNumber * Boss_Tools.arena_Count + "x " +
-                    npc.name + "!", CustomColours.minionColor);
+                    npc.name + "!", Color.CadetBlue);
             }
 
             Minions_Active = true;
