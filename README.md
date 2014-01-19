@@ -3,6 +3,11 @@ AutoBoss v2[.5].1
 
 Automatic boss spawner for terraria. Spawns personally selected bosses and minions in defined arenas
 
+To do
+============
+* Fix heirachy in code. It's currently awful
+* Fix bugs/add suggestions as/if they come
+
 
 
 ChangeLog:
@@ -52,4 +57,8 @@ ChangeLog:
 * In addition to this, if the bosses are teleported x times (config defined), the battle is ended and the bosses are killed.
 * Added changelog to README.md, because why not?
 
-Config file coming soon
+*v2.7
+-----------
+* Cleaned up a LOT of messy code.
+* Spawns etc now work correctly
+* Basically everything works better
