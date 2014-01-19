@@ -120,6 +120,11 @@ namespace Auto_Boss
 
                                 if (Boss_Tools.boss_Config.Continuous_Boss)
                                     ticker.count = -1;
+                                else
+                                {
+                                    TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.DayTimer_Finished);
+                                    boss_Timer.Enabled = false;
+                                }
                             }
                         }
                     }
@@ -138,7 +143,13 @@ namespace Auto_Boss
                                 //    startMinionTimer();
 
                                 Boss_Events.start_BossBattle_Night();
-                                ticker.count = -1;
+                                if (Boss_Tools.boss_Config.Continuous_Boss)
+                                    ticker.count = -1;
+                                else
+                                {
+                                    TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.NightTimer_Finished);
+                                    boss_Timer.Enabled = false;
+                                }
                             }
                         }
                     }
@@ -157,7 +168,13 @@ namespace Auto_Boss
                                 //    startMinionTimer();
 
                                 Boss_Events.start_BossBattle_Special();
-                                ticker.count = -1;
+                                if (Boss_Tools.boss_Config.Continuous_Boss)
+                                    ticker.count = -1;
+                                else
+                                {
+                                    TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.SpecialTimer_Finished);
+                                    boss_Timer.Enabled = false;
+                                }
                             }
                         }
                     }
