@@ -40,6 +40,8 @@ namespace Auto_Boss
                                     }
                                 }
 
+                                
+
                                 if (!Boss_Timer.boss_Timer.Enabled)
                                     Boss_Timer.Run();
                             }
@@ -56,8 +58,6 @@ namespace Auto_Boss
                                 (Boss_Tools.SetupConfig(true, args.Player) ? "S" : "Uns") +
                                 "uccessfully reloaded the Boss_Tools.boss_Configuration file", CustomColours.comColor
                                 );
-
-                            Boss_Timer.EndBattle();
 
                             break;
                         }

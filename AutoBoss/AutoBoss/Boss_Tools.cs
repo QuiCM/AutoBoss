@@ -42,16 +42,6 @@ namespace Auto_Boss
                 {
                     boss_Config = Boss_Config.Read(config_Path);
 
-                    foreach (Toggle_Obj t in boss_Config.Boss_Toggles)
-                    {
-                        if (t.type == "day" && t.enabled)
-                            Boss_Timer.dayBossEnabled = true;
-                        if (t.type == "night" && t.enabled)
-                            Boss_Timer.nightBossEnabled = true;
-                        if (t.type == "special" && t.enabled)
-                            Boss_Timer.specialBossEnabled = true;
-                    }
-
                     if (commandRun)
                     {
                         foreach (KeyValuePair<string, bool> pair in boss_Config.Boss_Arenas)
@@ -161,34 +151,59 @@ namespace Auto_Boss
                 Log.ConsoleInfo("[AutoBoss+] Initialized successfully");
             else
                 SendMultipleErrors(true, null, logExceptions);
+
+
+            foreach (Toggle_Obj t in boss_Config.Boss_Toggles)
+            {
+                if (t.type == "day" && t.enabled)
+                    Boss_Timer.dayBossEnabled = true;
+                if (t.type == "night" && t.enabled)
+                    Boss_Timer.nightBossEnabled = true;
+                if (t.type == "special" && t.enabled)
+                    Boss_Timer.specialBossEnabled = true;
+            }
+
+            foreach (Toggle_Obj t in boss_Config.Minion_Toggles)
+            {
+                if (t.type == "day" && t.enabled)
+                    Boss_Timer.dayMinionEnabled = true;
+                if (t.type == "night" && t.enabled)
+                    Boss_Timer.nightMinionEnabled = true;
+                if (t.type == "special" && t.enabled)
+                    Boss_Timer.specialMinionEnabled = true;
+            }
         }
         #endregion
 
         #region Boss&Minion slayers
         public static void Kill_Bosses()
         {
-            foreach (NPC boss in boss_List)
-            {
-                if (boss.active)
-                    TSPlayer.Server.StrikeNPC(boss.type, boss.lifeMax * boss.defense, 1f, 1);
-                else
-                    TSPlayer.Server.StrikeNPC(boss.type, boss.lifeMax * boss.defense, 1f, 1);
-                boss_List.Remove(boss);
-            }
+            for (int i = 0; i < Main.maxNPCTypes; i++)
+                for (int j = 0; j < boss_List.Count; j++)
+                    if (!Main.npc[i].active && boss_List[j].type == i)
+                    {
+                        TSPlayer.Server.StrikeNPC(i, Main.npc[i].lifeMax * Main.npc[i].defense, 1f, 1);
+                        boss_List.RemoveAt(j);
+                    }
             boss_List.Clear();
+        }
+
+        public static void Kill_Boss(int i)
+        {
+            TSPlayer.Server.StrikeNPC(i, Main.npc[i].lifeMax * Main.npc[i].defense, 1f, 1);
+            try { boss_List.Remove(Main.npc[i]); }
+            catch { }
         }
 
         public static void Kill_Minions()
         {
-            foreach (NPC minion in minion_List)
-            {
-                if (minion.active)
-                    TSPlayer.Server.StrikeNPC(minion.type, minion.lifeMax * minion.defense, 1f, 1);
-                else
-                    TSPlayer.Server.StrikeNPC(minion.type, minion.lifeMax * minion.defense, 1f, 1);
-                minion_List.Remove(minion);
-            }
-
+            for (int i = 0; i < Main.maxNPCTypes; i++)
+                for (int j = 0; j < minion_List.Count; j++)
+                    if (!Main.npc[i].active && minion_List[j].type == i)
+                    {
+                        TSPlayer.Server.StrikeNPC(i, Main.npc[i].lifeMax * Main.npc[i].defense, 1f, 1);
+                        minion_List.RemoveAt(j);
+                    }
             minion_List.Clear();
         }
         #endregion

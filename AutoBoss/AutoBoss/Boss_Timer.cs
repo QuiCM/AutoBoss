@@ -9,272 +9,186 @@ using TShockAPI;
 
 namespace Auto_Boss
 {
-    /* This is a small class that I can store values inside of, that I can use later. */
     public class timerObj
     {
-        /* Length is a numerical value that the timerObj has
-         * type is a string value: "day", "night" or "special"
-         * enabled is a boolean: true or false
-         */
 
-        public int length;
+        public int count;
+        public int maxCount;
         public string type;
         public bool enabled;
 
-        public timerObj(int l, string t, bool e)
+        public timerObj(int c, string t, bool e, int m)
         {
-            length = l;
+            count = c;
             type = t;
             enabled = e;
+            maxCount = m;
         }
     }
 
     public class Boss_Timer
     {
         public static Timer boss_Timer = new Timer(Boss_Tools.boss_Config.Message_Interval * 1000);
+
         public static bool dayBossEnabled = false;
         public static bool nightBossEnabled = false;
         public static bool specialBossEnabled = false;
 
+        public static bool dayMinionEnabled = false;
+        public static bool nightMinionEnabled = false;
+        public static bool specialMinionEnabled = false;
+
         public static bool MinionTimerRunning = false;
 
-        /* This dictionary is what allows the timer to function the way I want it to. 
-         * The first timerObj is the one that counts up. It's maximum value is the text appended by .Length in the second
-         * timerObj. For example:
-         * Boss_Tools.boss_Config.NightTimer_Text is a string[]. In the default config it holds 8 values, so it's length is 8
-         * This means that the timer can tick through it 8 - 1 (= 7) times (because of 0-based indexes)
-         * When the value of the timerObj on the left reaches its maximum value, bosses are spawned.
-         */
-        internal static Dictionary<timerObj, timerObj> ticker = new Dictionary<timerObj, timerObj>()
-        {
-            {
-                new timerObj(0, "night", false), new timerObj(Boss_Tools.boss_Config.NightTimer_Text.Length, "night", false)
-            },
-            {
-                new timerObj(0, "day", false), new timerObj(Boss_Tools.boss_Config.DayTimer_Text.Length, "day", false)
-            },
-            {
-                new timerObj(0, "special", false), new timerObj(Boss_Tools.boss_Config.SpecialTimer_Text.Length, "special", false)
-            }
-        };
+        internal static timerObj ticker = new timerObj(-1, "day", false, 10);
 
 
-        /* Starts the timer */
         public static void Run()
         {
             boss_Timer.Enabled = true;
             boss_Timer.Elapsed += boss_Timer_Elapsed;
         }
 
-        /* What happens when the tick (Boss_Tools.boss_Config defined option)seconds passes */
         public static void boss_Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            /* To stop the timer while bosses are still spawned. */
-            if (Boss_Events.Bosses_Active)
+            bool bossActive = false;
+            for (int i = 0; i < Main.npc.Length; i++)
             {
-                foreach (NPC boss in Boss_Tools.boss_List)
-                    if (!Main.npc.Contains(boss))
-                        Boss_Tools.boss_List.Remove(boss);
-
-                if (Boss_Tools.boss_List.Count < 1)
+                if (Main.npc[i].active)
                 {
-                    Boss_Events.Bosses_Active = false;
-                    EndBattle();
-                    TSPlayer.All.SendInfoMessage("[AutoBoss+] debug: Battle ended due to boss list being empty");
+                    if (Boss_Tools.boss_List.Contains(Main.npc[i]))
+                    {
+                        bossActive = true;
+                        Console.WriteLine("NPC {0} is active", Main.npc[i]);
+                    }
                 }
-                return;
             }
-            /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+            Console.WriteLine("Boss active: " + bossActive);
 
-            /* Disable the timer if the toggle is turned off */ 
+            /* Disable the timer if the toggle is turned off */
             if (!Boss_Tools.Bosses_Toggled)
             {
                 Log.ConsoleInfo("[AutoBoss+] Timer Disabled: Boss toggle disabled");
                 boss_Timer.Enabled = false;
                 boss_Timer.Elapsed -= boss_Timer_Elapsed;
                 Boss_Tools.Bosses_Toggled = false;
-                resetTicks();
+                ticker.count = -1;
                 return;
             }
-            /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+            /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
-            /* Disable the timer if there are no players online */ 
+            /* Disable the timer if there are no players online / 
             if (TShock.Players[0] == null && TShock.Players.Length == 0)
             {
-                Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players online!");
+                Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players online");
                 boss_Timer.Enabled = false;
                 boss_Timer.Elapsed -= boss_Timer_Elapsed;
                 Boss_Tools.Bosses_Toggled = false;
                 resetTicks();
                 return;
             }
-            /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+            /  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-            foreach (KeyValuePair<timerObj, timerObj> pair in ticker)
+            if (Main.dayTime && dayBossEnabled && !ticker.enabled)
             {
-                /* Enable the keys if it's the correct time for them */
-                if (Main.dayTime && pair.Key.type == "day" && !pair.Key.enabled && dayBossEnabled)
-                    pair.Key.enabled = true;
+                ticker.type = "day";
+                ticker.maxCount = Boss_Tools.boss_Config.DayTimer_Text.Length - 1;
+                ticker.enabled = true;
+                Console.WriteLine("Timer set to day");
+            }
+            if (!Main.dayTime && !Main.raining && !Main.bloodMoon && !Main.eclipse && !Main.pumpkinMoon &&
+                !Main.snowMoon && Main.invasionType == 0 && nightBossEnabled && !ticker.enabled)
+            {
+                ticker.type = "night";
+                ticker.maxCount = Boss_Tools.boss_Config.NightTimer_Text.Length - 1;
+                ticker.enabled = true;
+                Console.WriteLine("Timer set to Night");
+            }
 
-                if (!Main.dayTime && pair.Key.type == "night" && !pair.Key.enabled && nightBossEnabled)
-                    pair.Key.enabled = true;
+            if (Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
+                            Main.snowMoon || Main.invasionType > 0 && specialBossEnabled && !ticker.enabled)
+            {
+                ticker.type = "special";
+                ticker.maxCount = Boss_Tools.boss_Config.SpecialTimer_Text.Length - 1;
+                ticker.enabled = true;
+                Console.WriteLine("Timer set to Special");
+            }
 
-                if (Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon || Main.snowMoon || Main.invasionSize > 0
-                                    && pair.Key.type == "special" && !pair.Key.enabled && specialBossEnabled)
-                    pair.Key.enabled = true;
-                /* this allows the value of the key to count up */
-
-
-                /* Check if the key is enabled,  before doing anything with it */
-                if (pair.Key.enabled)
+            if (ticker.enabled)
+            {
+                Console.WriteLine("Timer is enabled");
+                Console.WriteLine(ticker.count);
+                if (!bossActive)
                 {
-                    /* -1 length means the battle has ended. */
-                    if (pair.Key.length == -1)
+                    ticker.count++;
+                    Console.WriteLine(ticker.count + "/" + ticker.maxCount);
+
+                    if (ticker.type == "day")
                     {
-                        EndBattle();
-                        pair.Key.length++;
+                        if (Boss_Tools.boss_Config.Enable_DayTimer_Text)
+                        {
+                            Console.WriteLine("Ticker type: Day. Day text enabled: {0}", Boss_Tools.boss_Config.Enable_DayTimer_Text);
+
+                            if (ticker.count != ticker.maxCount)
+                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.count]);
+
+                            else if (ticker.count >= ticker.maxCount)
+                            {
+                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.maxCount]);
+
+                                //if (!MinionTimerRunning)
+                                //    startMinionTimer();
+
+                                Boss_Events.start_BossBattle_Day();
+                                ticker.count = -1;
+                            }
+                        }
                     }
-                    else
-                        pair.Key.length++;
-
-                    /* if the length of the key is greater than the length of the value - 1, then the key has counted as far as
-                     * it can, so I reset it. */
-                    if (pair.Key.length > pair.Value.length - 1)
+                    if (ticker.type == "night")
                     {
-                        pair.Key.length = -1;
-                        pair.Key.enabled = false;
+                        if (Boss_Tools.boss_Config.Enable_NightTimer_Text)
+                        {
+                            Console.WriteLine("Ticker type: Night. Night text enabled: {0}", Boss_Tools.boss_Config.Enable_NightTimer_Text);
+                            if (ticker.count != ticker.maxCount)
+                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.count]);
+
+                            else if (ticker.count >= ticker.maxCount)
+                            {
+                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.maxCount]);
+
+                                //if (!MinionTimerRunning)
+                                //    startMinionTimer();
+
+                                Boss_Events.start_BossBattle_Night();
+                                ticker.count = -1;
+                            }
+                        }
                     }
-
-                    switch (pair.Key.type.ToLower())
+                    if (ticker.type == "special")
                     {
-                        case "day":
+                        if (Boss_Tools.boss_Config.Enable_SpecialTimer_Text)
+                            Console.WriteLine("Ticker type: Special. Special text enabled: {0}", Boss_Tools.boss_Config.Enable_SpecialTimer_Text);
+                        {
+                            if (ticker.count != ticker.maxCount)
+                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.count]);
+
+                            else if (ticker.count >= ticker.maxCount)
                             {
-                                if (Main.dayTime)
-                                {
-                                    /* it's day time and the length of the key is equal to (but not greater than)
-                                     * the length of the value - 1. So I start the battle */
-                                    if (pair.Key.length == pair.Value.length - 1)
-                                    {
-                                        if (Boss_Tools.boss_Config.Enable_DayTimer_Text)
-                                            TSPlayer.All.SendMessage(Boss_Tools.boss_Config.DayTimer_Text[pair.Key.length],
-                                                CustomColours.msgColor);
+                                TSPlayer.All.SendInfoMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.maxCount]);
 
-                                        if (dayBossEnabled)
-                                            Boss_Events.start_BossBattle_Day();
+                                //if (!MinionTimerRunning)
+                                //    startMinionTimer();
 
-                                        if (!MinionTimerRunning)
-                                            startMinionTimer();
-                                    }
-                                    else
-                                    {
-                                        /* This is what sends the countdown message to players 
-                                         * pair.Key.Length is a numerical value, and ...DayTimer_Text is a string[]
-                                         * So using ...DayTimer_Text[pair.Key.Value] sends the message in the
-                                         * pair.Key.Value position of the string array. Eg, if pair.Key.Value is 4, then the
-                                         * 5th message in the array is sent (because of 0 based indexing)
-                                         */
-                                        if (Boss_Tools.boss_Config.Enable_DayTimer_Text)
-                                            TSPlayer.All.SendMessage(Boss_Tools.boss_Config.DayTimer_Text[pair.Key.length],
-                                                CustomColours.msgColor);
-                                    }
-                                }
-                                else
-                                {
-                                    /* The key is enabled, but it's not day time, so I disable the key and reset its count */
-                                    pair.Key.enabled = false;
-                                    resetTicks(true, false, false);
-                                }
-
-                                break;
+                                Boss_Events.start_BossBattle_Special();
+                                ticker.count = -1;
                             }
-                        case "night":
-                            {
-                                if (!Main.dayTime)
-                                {
-                                    if (pair.Key.length == pair.Value.length - 1)
-                                    {
-                                        if (Boss_Tools.boss_Config.Enable_NightTimer_Text)
-                                            TSPlayer.All.SendMessage(Boss_Tools.boss_Config.NightTimer_Text[pair.Key.length],
-                                             CustomColours.msgColor);
-
-                                        if (nightBossEnabled)
-                                        Boss_Events.start_BossBattle_Night();
-
-                                        if (!MinionTimerRunning)
-                                            startMinionTimer();
-                                    }
-                                    else
-                                    {
-                                        if (Boss_Tools.boss_Config.Enable_NightTimer_Text)
-                                            TSPlayer.All.SendMessage(Boss_Tools.boss_Config.NightTimer_Text[pair.Key.length],
-                                                CustomColours.msgColor);
-                                    }
-                                }
-                                else
-                                {
-                                    pair.Key.enabled = false;
-                                    resetTicks(false, true, false);
-                                }
-                                break;
-                            }
-                        case "special":
-                            {
-                                if (Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
-                                    Main.snowMoon || Main.invasionSize > 0)
-                                {
-                                    if (pair.Key.length == pair.Value.length - 1)
-                                    {
-                                        if (Boss_Tools.boss_Config.Enable_SpecialTimer_Text)
-                                            TSPlayer.All.SendMessage(Boss_Tools.boss_Config.SpecialTimer_Text[pair.Key.length],
-                                                   CustomColours.msgColor);
-
-                                        if (specialBossEnabled)
-                                        Boss_Events.start_BossBattle_Special();
-
-                                        if (!MinionTimerRunning)
-                                            startMinionTimer();
-                                    }
-                                    else
-                                    {
-                                        if (Boss_Tools.boss_Config.Enable_SpecialTimer_Text)
-                                            TSPlayer.All.SendMessage(Boss_Tools.boss_Config.SpecialTimer_Text[pair.Key.length],
-                                                CustomColours.msgColor);
-                                    }
-                                }
-                                else
-                                {
-                                    pair.Key.enabled = false;
-                                    resetTicks(false, false, true);
-                                }
-                            }
-                            break;
+                        }
                     }
                 }
             }
+            Console.WriteLine("Tick");
         }
 
-        public static void EndBattle()
-        {
-            Boss_Tools.Kill_Bosses();
-            Boss_Tools.Kill_Minions();
-        }
-
-        public static void resetTicks(bool day = true, bool night = true, bool special = true)
-        {
-            foreach (KeyValuePair<timerObj, timerObj> t in ticker)
-            {
-                if (day)
-                    if (t.Key.type == "day" && t.Key.length > 0)
-                        t.Key.length = 0;
-                if (night)
-                    if (t.Key.type == "night" && t.Key.length > 0)
-                        t.Key.length = 0;
-                if (special)
-                    if (t.Key.type == "special" && t.Key.length > 0)
-                        t.Key.length = 0;
-            }
-        }
-        
         public static void startMinionTimer()
         {
             MinionTimerRunning = true;
@@ -289,14 +203,15 @@ namespace Auto_Boss
 
         public static void Minion_Elapsed_Event(object sender, ElapsedEventArgs args)
         {
-            if (Boss_Events.Bosses_Active && Main.dayTime)
+            if (Boss_Events.Bosses_Active && Main.dayTime && dayMinionEnabled)
                 Boss_Events.start_DayMinion_Spawns();
 
-            if (Boss_Events.Bosses_Active && !Main.dayTime)
+            if (Boss_Events.Bosses_Active && !Main.dayTime && !Main.raining && !Main.bloodMoon && !Main.eclipse
+                && !Main.pumpkinMoon && !Main.snowMoon && Main.invasionType == 0 && nightMinionEnabled)
                 Boss_Events.start_NightMinion_Spawns();
 
             if (Boss_Events.Bosses_Active && Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
-                                    Main.snowMoon || Main.invasionSize > 0)
+                                    Main.snowMoon || Main.invasionSize > 0 && specialMinionEnabled)
                 Boss_Events.start_SpecialMinion_Spawns();
         }
     }

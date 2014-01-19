@@ -25,10 +25,11 @@ namespace Auto_Boss
             Day_Boss_Set day_Bosses = Boss_Tools.boss_Config.Day_BossList[rnd_Num.Next(0, 
                 Boss_Tools.boss_Config.Day_BossList.Count)];
 
+            var bosses = new List<NPC>();
             foreach (Day_Boss_Obj b in day_Bosses.day_Bosses)
             {
                 npc = TShock.Utils.GetNPCById(b.id);
-                Boss_Tools.boss_List.Add(npc);
+                bosses.Add(npc);
 
                 foreach (Region region in Boss_Tools.Active_Arenas)
                 {
@@ -59,10 +60,11 @@ namespace Auto_Boss
             Special_Boss_Set special_Bosses = Boss_Tools.boss_Config.Special_BossList[rnd_Num.Next(0,
                 Boss_Tools.boss_Config.Special_BossList.Count)];
 
+            var bosses = new List<NPC>();
             foreach (Special_Boss_Obj b in special_Bosses.special_Bosses)
             {
                 npc = TShock.Utils.GetNPCById(b.id);
-                Boss_Tools.boss_List.Add(npc);
+                bosses.Add(npc);
 
                 foreach (Region region in Boss_Tools.Active_Arenas)
                 {
@@ -73,6 +75,8 @@ namespace Auto_Boss
 
                 broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
             }
+
+            Boss_Tools.boss_List = bosses;
 
             Bosses_Active = true;
 
@@ -92,10 +96,11 @@ namespace Auto_Boss
             Night_Boss_Set night_Bosses = Boss_Tools.boss_Config.Night_BossList[rnd_Num.Next(0,
                 Boss_Tools.boss_Config.Night_BossList.Count)];
 
+            var bosses = new List<NPC>();
             foreach (Night_Boss_Obj b in night_Bosses.night_Bosses)
             {
                 npc = TShock.Utils.GetNPCById(b.id);
-                Boss_Tools.boss_List.Add(npc);
+                bosses.Add(npc);
 
                 foreach (Region region in Boss_Tools.Active_Arenas)
                 {
@@ -106,6 +111,8 @@ namespace Auto_Boss
 
                 broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
             }
+
+            Boss_Tools.boss_List = bosses;
 
             Bosses_Active = true;
 
