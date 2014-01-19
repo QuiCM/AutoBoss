@@ -79,10 +79,13 @@ namespace Auto_Boss
         #region NetGreetPlayer
         public void OnGreet(GreetPlayerEventArgs args)
         {
-            if (Boss_Tools.boss_Config.AutoStart_Enabled)
-                if (TShock.Players[0].Index == args.Who && TShock.Players.Length < 2)
-                    if (!Boss_Timer.boss_Timer.Enabled)
-                        Boss_Timer.boss_Timer.Enabled = true;
+            if (TShock.Players[args.Who] != null)
+            {
+                if (Boss_Tools.boss_Config.AutoStart_Enabled)
+                    if (TShock.Players[0].Index == args.Who && TShock.Players.Length < 2)
+                        if (!Boss_Timer.boss_Timer.Enabled)
+                            Boss_Timer.boss_Timer.Enabled = true;
+            }
         }
         #endregion
     }
