@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using System.Collections.Generic;
 
 using Terraria;
@@ -21,7 +22,7 @@ namespace Auto_Boss
         public static string invalid_Regions = string.Empty;
 
         public static Dictionary<int, int> boss_List = new Dictionary<int, int>();
-        public static List<NPC> minion_List = new List<NPC>();
+        public static Dictionary<int, int> minion_List = new Dictionary<int, int>();
 
         public static List<Region> Active_Arenas = new List<Region>();
         public static List<string> Inactive_Arenas = new List<string>();
@@ -117,13 +118,49 @@ namespace Auto_Boss
             }
 
             invalid_Regions = string.Empty;
+
+            foreach (Toggle_Obj t in boss_Config.Boss_Toggles)
+            {
+                if (t.type == "day" && t.enabled)
+                    Boss_Timer.dayBossEnabled = true;
+                else
+                    Boss_Timer.dayBossEnabled = false;
+
+                if (t.type == "night" && t.enabled)
+                    Boss_Timer.nightBossEnabled = true;
+                else
+                    Boss_Timer.nightBossEnabled = false;
+
+                if (t.type == "special" && t.enabled)
+                    Boss_Timer.specialBossEnabled = true;
+                else
+                    Boss_Timer.specialBossEnabled = false;
+            }
+
+            foreach (Toggle_Obj t in boss_Config.Minion_Toggles)
+            {
+                if (t.type == "day" && t.enabled)
+                    Boss_Timer.dayMinionEnabled = true;
+                else
+                    Boss_Timer.dayMinionEnabled = false;
+
+                if (t.type == "night" && t.enabled)
+                    Boss_Timer.nightMinionEnabled = true;
+                else
+                    Boss_Timer.nightMinionEnabled = false;
+
+                if (t.type == "special" && t.enabled)
+                    Boss_Timer.specialMinionEnabled = true;
+                else 
+                    Boss_Timer.specialMinionEnabled = false;
+            }
         }
 
         #region PostInitialize
         public static void PostInitialize(EventArgs args)
         {
+            reloadConfig(true);
 
-            (boss_Config = Boss_Config.Read(config_Path)).Write(config_Path);
 
             foreach (Toggle_Obj t in boss_Config.Boss_Toggles)
             {
@@ -144,7 +181,6 @@ namespace Auto_Boss
                 if (t.type == "special" && t.enabled)
                     Boss_Timer.specialMinionEnabled = true;
             }
-
         }
         #endregion
 

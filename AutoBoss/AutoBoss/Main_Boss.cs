@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Timers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -66,13 +67,17 @@ namespace Auto_Boss
         #region OnInitialize
         public void OnInitialize(EventArgs args)
         {
-            Boss_Timer.boss_Timer.Elapsed += new System.Timers.ElapsedEventHandler(Boss_Timer.boss_Timer_Elapsed);
-
             Commands.ChatCommands.Add(new Command("boss.root", Boss_Commands.Boss_Command, "boss")
                 {
                     HelpText = "Toggles automatic boss spawns; Reloads the configuration; Lists bosses and minions spawned by the plugin"
                 });
-            Boss_Tools.reloadConfig();
+
+            (Boss_Tools.boss_Config = Boss_Config.Read(Boss_Tools.config_Path)).Write(Boss_Tools.config_Path);
+
+
+            Boss_Timer.boss_Timer.Elapsed += new ElapsedEventHandler(Boss_Timer.boss_Timer_Elapsed);
+
+            Boss_Timer.minionTimer.Elapsed += new ElapsedEventHandler(Boss_Timer.Minion_Elapsed_Event);
         }
         #endregion
 

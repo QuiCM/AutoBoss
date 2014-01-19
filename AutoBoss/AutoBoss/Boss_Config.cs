@@ -179,9 +179,8 @@ namespace Auto_Boss
 
         public List<Toggle_Obj> Minion_Toggles;
 
-        /* Now has much nicer formatting & names */
         public List<Day_Boss_Set> Day_BossList;
-        public List<Day_Minion_Obj> Day_Minionlist;
+        public List<Day_Minion_Obj> Day_MinionList;
 
         public List<Night_Boss_Set> Night_BossList;
         public List<Night_Minion_Obj> Night_MinionList;

@@ -19,7 +19,6 @@ namespace Auto_Boss
                 return;
             }
             else
-            {
                 switch (args.Parameters[0])
                 {
                     case "toggle":
@@ -29,7 +28,6 @@ namespace Auto_Boss
                             if (Boss_Tools.Bosses_Toggled)
                             {
                                 foreach (KeyValuePair<string, bool> pair in Boss_Tools.boss_Config.Boss_Arenas)
-                                {
                                     if (!TShock.Regions.Regions.Contains(TShock.Regions.GetRegionByName(pair.Key))
                                         && pair.Value == true)
                                     {
@@ -38,9 +36,6 @@ namespace Auto_Boss
                                         Boss_Tools.Bosses_Toggled = false;
                                         return;
                                     }
-                                }
-
-
 
                                 if (!Boss_Timer.boss_Timer.Enabled)
                                     Boss_Timer.boss_Timer.Enabled = true;
@@ -53,8 +48,6 @@ namespace Auto_Boss
                         }
                     case "reload":
                         {
-                            //args.Player.SendSuccessMessage((Boss_Tools.SetupConfig(true, args.Player) ? "S" : "Uns") +
-                            //    "uccessfully reloaded the Boss_Tools.boss_Configuration file");
                             if (args.Player == TSPlayer.Server)
                                 Boss_Tools.reloadConfig(true);
                             else
@@ -75,17 +68,11 @@ namespace Auto_Boss
                                         {
                                             int page_Number;
                                             if (!PaginationTools.TryParsePageNumber(args.Parameters, 2, args.Player, out page_Number))
-                                            {
                                                 return;
-                                            }
-
-                                            var bosses = new List<string>();
-                                            foreach (KeyValuePair<int, int> pair in Boss_Tools.boss_List)
-                                                if (Main.npc[pair.Key].type == pair.Value && Main.npc[pair.Key].active)
-                                                    bosses.Add(Main.npc[pair.Key].name);
 
                                             PaginationTools.SendPage(args.Player, page_Number,
-                                                PaginationTools.BuildLinesFromTerms(bosses), new PaginationTools.Settings
+                                                PaginationTools.BuildLinesFromTerms(getDictionary(Boss_Tools.boss_List)),
+                                                new PaginationTools.Settings
                                                 {
                                                     HeaderFormat = "Boss List: {0}/{1}",
                                                     FooterFormat = "Use /boss list boss {0} for more bosses",
@@ -101,16 +88,11 @@ namespace Auto_Boss
                                         {
                                             int page_Number;
                                             if (!PaginationTools.TryParsePageNumber(args.Parameters, 2, args.Player, out page_Number))
-                                            {
                                                 return;
-                                            }
-
-                                            List<string> minions = new List<string>();
-                                            foreach (NPC n in Boss_Tools.minion_List)
-                                                minions.Add(n.name);
 
                                             PaginationTools.SendPage(args.Player, page_Number,
-                                                PaginationTools.BuildLinesFromTerms(minions), new PaginationTools.Settings
+                                                PaginationTools.BuildLinesFromTerms(getDictionary(Boss_Tools.minion_List)),
+                                                new PaginationTools.Settings
                                                 {
                                                     HeaderFormat = "Minion List: {0}/{1}",
                                                     FooterFormat = "Use /boss list mobs {0} for more minions",
@@ -130,9 +112,7 @@ namespace Auto_Boss
                                 }
                             }
                             else
-                            {
                                 args.Player.SendErrorMessage("Valid list options: [boss\\minions\\mobs]");
-                            }
                             break;
                         }
                     #endregion
@@ -160,12 +140,9 @@ namespace Auto_Boss
                             #endregion
 
                             if (!PaginationTools.TryParsePageNumber(args.Parameters, 1, args.Player, out page_Number))
-                            {
                                 return;
-                            }
 
                             else
-                            {
                                 PaginationTools.SendPage(args.Player, page_Number,
                                 PaginationTools.BuildLinesFromTerms(SetupLines), new PaginationTools.Settings
                                 {
@@ -176,7 +153,6 @@ namespace Auto_Boss
                                     LineTextColor = Color.White,
                                     NothingToDisplayString = "There are no valid setup options to be displayed"
                                 });
-                            }
                             break;
                         }
 
@@ -187,7 +163,6 @@ namespace Auto_Boss
                             break;
                         }
                 }
-            }
         }
 
         public static string CheckMobTypes
@@ -216,6 +191,34 @@ namespace Auto_Boss
                 }
                 return string.Format("{0}", string.Join(", ", enabled));
             }
+        }
+
+        public static List<string> getDictionary(Dictionary<int, int> dict)
+        {
+                            
+            List<string> ret = new List<string>();
+            Dictionary<string, int> strings = new Dictionary<string, int>();
+
+            foreach (KeyValuePair<int, int> pair in dict)
+            {
+                if (Main.npc[pair.Key].type == pair.Value && Main.npc[pair.Key].active)
+                {
+                    if (!strings.ContainsKey(Main.npc[pair.Key].name))
+                        strings.Add(Main.npc[pair.Key].name, 1);
+                    else
+                        strings[Main.npc[pair.Key].name]++;
+                }
+            }
+
+            foreach (KeyValuePair<string, int> pair in strings)
+            {
+                if (pair.Value > 1)
+                    ret.Add(pair.Key + " (" + pair.Value + ")");
+                else
+                    ret.Add(pair.Key);
+            }
+
+            return ret;
         }
     }
 }
