@@ -129,51 +129,21 @@ namespace Auto_Boss
         public int Message_Interval = 10;
 
         public bool Enable_DayTimer_Text = false;
-        public string[] DayTimer_Text =
-        {
-            "[Note] These messages are printed in-game in the order they are placed in this config file",
-            "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
-            "[Note] All pieces of text in this section can be modified, deleted etc.",
-            "[Day] Initial message", 
-            "[Day] Secondary message",
-            "[Day] Third message",
-            "[Day] Etc",
-            "[Day] Bosses spawning" 
-        };
-        public string DayTimer_Finished = "Boss battle complete.";
+        public string[] DayTimer_Text = { };
+        public string DayTimer_Finished;
 
         public bool Enable_NightTimer_Text = false;
-        public string[] NightTimer_Text =
-        {
-            "[Note] These messages are printed in-game in the order they are placed in this config file",
-            "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
-            "[Note] All pieces of text in this section can be modified, deleted etc.",
-            "[Night] Initial message",
-            "[Night] Secondary message", 
-            "[Night] Third message", 
-            "[Night] Etc",
-            "[Night] Bosses spawning"  
-        };
-        public string NightTimer_Finished = "Boss battle complete.";
+        public string[] NightTimer_Text = { };
+        public string NightTimer_Finished;
 
         public bool Enable_SpecialTimer_Text = false;
-        public string[] SpecialTimer_Text =
-        {
-            "[Note] These messages are printed in-game in the order they are placed in this config file",
-            "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
-            "[Note] All pieces of text in this section can be modified, deleted etc.",
-            "[Special] Initial message",
-            "[Special] Secondary message",
-            "[Special] Third message",
-            "[Special] Etc",
-            "[Special] Bosses spawning" 
-        };
-        public string SpecialTimer_Finished = "Boss battle complete.";
+        public string[] SpecialTimer_Text = { };
+        public string SpecialTimer_Finished;
 
         public bool Announce_Minions = false;
         public int[] Minions_Spawn_Timer = new int[2] { 10, 30 };
 
-        public Dictionary<string, bool> Boss_Arenas = new Dictionary<string, bool>() { { "example_Arena", false } };
+        public Dictionary<string, bool> Boss_Arenas = new Dictionary<string, bool>();
 
         public List<Toggle_Obj> Boss_Toggles = new List<Toggle_Obj>()
         {
