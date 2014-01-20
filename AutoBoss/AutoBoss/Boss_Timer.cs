@@ -100,7 +100,7 @@ namespace Auto_Boss
                 {
                     ticker.count++;
 
-                    if (ticker.type == "day")
+                    if (ticker.type == "day" && Main.dayTime)
                     {
                         if (Boss_Tools.boss_Config.Enable_DayTimer_Text)
                         {
@@ -130,7 +130,8 @@ namespace Auto_Boss
                             }
                         }
                     }
-                    if (ticker.type == "night")
+                    if (ticker.type == "night" && !Main.dayTime && !Main.raining && !Main.bloodMoon && 
+                        !Main.eclipse && !Main.pumpkinMoon && !Main.snowMoon && Main.invasionType < 1)
                     {
                         if (Boss_Tools.boss_Config.Enable_NightTimer_Text)
                         {
@@ -159,7 +160,8 @@ namespace Auto_Boss
                             }
                         }
                     }
-                    if (ticker.type == "special")
+                    if (ticker.type == "special" && Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
+                            Main.snowMoon || Main.invasionType > 0)
                     {
                         if (Boss_Tools.boss_Config.Enable_SpecialTimer_Text)
                         {
