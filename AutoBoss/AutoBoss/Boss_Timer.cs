@@ -63,16 +63,14 @@ namespace Auto_Boss
                 return;
             }
 
-            Console.WriteLine(TShock.Players.Count());
-
-            if (TShock.Players[0] == null)
-            {
-                Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players online");
-                boss_Timer.Enabled = false;
-                Boss_Tools.Bosses_Toggled = false;
-                ticker.count = -1;
-                return;
-            }
+            //if (TShock.Players[0] == null)
+            //{
+            //    Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players online");
+            //    boss_Timer.Enabled = false;
+            //    Boss_Tools.Bosses_Toggled = false;
+            //    ticker.count = -1;
+            //    return;
+            //}
 
             if (Main.dayTime && dayBossEnabled)
             {
