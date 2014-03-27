@@ -9,36 +9,36 @@ using Newtonsoft.Json;
 using Terraria;
 using TShockAPI;
 
-namespace Auto_Boss
+namespace AutoBoss
 {
     #region Minions
-    public class Day_Minion_Obj
+    public class DayMinionObj
     {
         public int id;
         public int amt;
-        public Day_Minion_Obj(int i, int a)
+        public DayMinionObj(int i, int a)
         {
             id = i;
             amt = a;
         }
     }
 
-    public class Special_Minion_Obj
+    public class SpecialMinionObj
     {
         public int id;
         public int amt;
-        public Special_Minion_Obj(int i, int a)
+        public SpecialMinionObj(int i, int a)
         {
             id = i;
             amt = a;
         }
     }
 
-    public class Night_Minion_Obj
+    public class NightMinionObj
     {
         public int id;
         public int amt;
-        public Night_Minion_Obj(int i, int a)
+        public NightMinionObj(int i, int a)
         {
             id = i;
             amt = a;
@@ -47,89 +47,89 @@ namespace Auto_Boss
     #endregion
 
     #region Bosses
-    public class Day_Boss_Obj
+    public class DayBossObj
     {
         public int id;
         public int amt;
-        public Day_Boss_Obj(int i, int a)
+        public DayBossObj(int i, int a)
         {
             id = i;
             amt = a;
         }
     }
 
-    public class Special_Boss_Obj
+    public class SpecialBossObj
     {
         public int id;
         public int amt;
-        public Special_Boss_Obj(int i, int a)
+        public SpecialBossObj(int i, int a)
         {
             id = i;
             amt = a;
         }
     }
 
-    public class Night_Boss_Obj
+    public class NightBossObj
     {
         public int id;
         public int amt;
-        public Night_Boss_Obj(int i, int a)
+        public NightBossObj(int i, int a)
         {
             id = i;
             amt = a;
         }
     }
 
-    public class Day_Boss_Set
+    public class DayBossSet
     {
-        public List<Day_Boss_Obj> day_Bosses;
-        public Day_Boss_Set(List<Day_Boss_Obj> day_Bosses)
+        public List<DayBossObj> dayBosses;
+        public DayBossSet(List<DayBossObj> dayBosses)
         {
-            this.day_Bosses = day_Bosses;
+            this.dayBosses = dayBosses;
         }
     }
 
-    public class Special_Boss_Set
+    public class SpecialBossSet
     {
-        public List<Special_Boss_Obj> special_Bosses;
-        public Special_Boss_Set(List<Special_Boss_Obj> special_Bosses)
+        public List<SpecialBossObj> specialBosses;
+        public SpecialBossSet(List<SpecialBossObj> specialBosses)
         {
-            this.special_Bosses = special_Bosses;
+            this.specialBosses = specialBosses;
         }
     }
 
-    public class Night_Boss_Set
+    public class NightBossSet
     {
-        public List<Night_Boss_Obj> night_Bosses;
-        public Night_Boss_Set(List<Night_Boss_Obj> night_Bosses)
+        public List<NightBossObj> nightBosses;
+        public NightBossSet(List<NightBossObj> nightBosses)
         {
-            this.night_Bosses = night_Bosses;
+            this.nightBosses = nightBosses;
         }
     }
     #endregion
 
-    public class Toggle_Obj
+    public class ToggleObj
     {
         public string type;
         public bool enabled;
 
-        public Toggle_Obj(string t, bool e)
+        public ToggleObj(string t, bool e)
         {
             type = t;
             enabled = e;
         }
     }
 
-    public class Boss_Config
+    public class BossConfig
     {
-        public bool AutoStart_Enabled = false;
+        public bool AutoStartEnabled = false;
 
-        public bool Continuous_Boss = false;
+        public bool ContinuousBoss = false;
 
-        public int Message_Interval = 10;
+        public int MessageInterval = 10;
 
-        public bool Enable_DayTimer_Text = false;
-        public string[] DayTimer_Text =
+        public bool EnableDayTimerText = false;
+        public string[] DayTimerText =
         {
             "[Note] These messages are printed in-game in the order they are placed in this config file",
             "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
@@ -140,10 +140,10 @@ namespace Auto_Boss
             "[Day] Etc",
             "[Day] Bosses spawning"
         };
-        public string DayTimer_Finished = "Boss battle complete.";
+        public string DayTimerFinished = "Boss battle complete.";
 
-        public bool Enable_NightTimer_Text = false;
-        public string[] NightTimer_Text =
+        public bool EnableNightTimerText = false;
+        public string[] NightTimerText =
         {
             "[Note] These messages are printed in-game in the order they are placed in this config file",
             "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
@@ -154,10 +154,10 @@ namespace Auto_Boss
             "[Night] Etc",
             "[Night] Bosses spawning"
         };
-        public string NightTimer_Finished = "Boss battle complete.";
+        public string NightTimerFinished = "Boss battle complete.";
 
-        public bool Enable_SpecialTimer_Text = false;
-        public string[] SpecialTimer_Text =
+        public bool EnableSpecialTimerText = false;
+        public string[] SpecialTimerText =
         { 
             "[Note] These messages are printed in-game in the order they are placed in this config file",
             "[Note] Leave the message that indicates the spawning of bosses last. These notes can be deleted",
@@ -168,38 +168,38 @@ namespace Auto_Boss
             "[Special] Etc",
             "[Special] Bosses spawning"
         };
-        public string SpecialTimer_Finished = "Boss battle complete.";
+        public string SpecialTimerFinished = "Boss battle complete.";
 
-        public bool Announce_Minions = false;
-        public int[] Minions_Spawn_Timer = new int[2] { 10, 30 };
+        public bool AnnounceMinions = false;
+        public int[] MinionsSpawnTimer = new int[2] { 10, 30 };
 
-        public Dictionary<string, bool> Boss_Arenas = new Dictionary<string, bool>();
+        public Dictionary<string, bool> BossArenas = new Dictionary<string, bool>();
 
-        public List<Toggle_Obj> Boss_Toggles;
+        public List<ToggleObj> BossToggles;
 
-        public List<Toggle_Obj> Minion_Toggles;
+        public List<ToggleObj> MinionToggles;
 
-        public List<Day_Boss_Set> Day_BossList;
-        public List<Day_Minion_Obj> Day_MinionList;
+        public List<DayBossSet> DayBossList;
+        public List<DayMinionObj> DayMinionList;
 
-        public List<Night_Boss_Set> Night_BossList;
-        public List<Night_Minion_Obj> Night_MinionList;
+        public List<NightBossSet> NightBossList;
+        public List<NightMinionObj> NightMinionList;
 
-        public List<Special_Boss_Set> Special_BossList;
-        public List<Special_Minion_Obj> Special_MinionList;
+        public List<SpecialBossSet> SpecialBossList;
+        public List<SpecialMinionObj> SpecialMinionList;
 
         public void Write(string path)
         {
             File.WriteAllText(path, JsonConvert.SerializeObject(this, Formatting.Indented));
         }
 
-        public static Boss_Config Read(string path)
+        public static BossConfig Read(string path)
         {
             if (!File.Exists(path))
-                return new Boss_Config();
-            return JsonConvert.DeserializeObject<Boss_Config>(File.ReadAllText(path));
+                return new BossConfig();
+            return JsonConvert.DeserializeObject<BossConfig>(File.ReadAllText(path));
         }
 
-        public static Action<Boss_Config> ConfigRead;
+        public static Action<BossConfig> ConfigRead;
     }
 }

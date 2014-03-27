@@ -12,62 +12,78 @@ using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.DB;
 
-namespace Auto_Boss
+namespace AutoBoss
 {
-    public class Boss_Tools
+    public class BossTools
     {
-        public static Boss_Config boss_Config { get; set; }
-        public static string config_Path { get { return Path.Combine(TShock.SavePath, "Boss_Config.json"); } }
+        private BossTools() { }
 
-        public static string invalid_Regions = string.Empty;
+        private static volatile BossTools instance = null;
 
-        public static Dictionary<int, int> boss_List = new Dictionary<int, int>();
-        public static Dictionary<int, int> minion_List = new Dictionary<int, int>();
+        public static BossTools Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new BossTools();
 
-        public static List<Region> Active_Arenas = new List<Region>();
-        public static List<string> Inactive_Arenas = new List<string>();
-        public static int arena_Count = 0;
+                return instance;
+            }
+        }
 
-        public static bool Bosses_Toggled = false;
 
-        #region Setup_Config
+        public BossConfig bossConfig { get; set; }
+        public string configPath { get { return Path.Combine(TShock.SavePath, "BossConfig.json"); } }
+
+        public string invalidRegions = string.Empty;
+
+        public Dictionary<int, int> bossList = new Dictionary<int, int>();
+        public Dictionary<int, int> minionList = new Dictionary<int, int>();
+
+        public List<Region> ActiveArenas = new List<Region>();
+        public List<string> InactiveArenas = new List<string>();
+        public int arenaCount = 0;
+
+        public bool BossesToggled = false;
+
+        #region SetupConfig
        /* public static void SetupConfig()
         {
             bool failed = false;
 
             List<string> logExceptions = new List<string>();
 
-            foreach (KeyValuePair<string, bool> pair in boss_Config.Boss_Arenas)
+            foreach (KeyValuePair<string, bool> pair in bossConfig.BossArenas)
             {
                 if (pair.Value == true)
                 {
                     if (TShock.Regions.GetRegionByName(pair.Key) != null)
                     {
-                        if (!Active_Arenas.Contains(TShock.Regions.GetRegionByName(pair.Key)))
-                            Active_Arenas.Add(TShock.Regions.GetRegionByName(pair.Key));
+                        if (!ActiveArenas.Contains(TShock.Regions.GetRegionByName(pair.Key)))
+                            ActiveArenas.Add(TShock.Regions.GetRegionByName(pair.Key));
 
                         failed = false;
                     }
 
                     else
                     {
-                        invalid_Regions += (invalid_Regions.Length > 0 ? ", " : "") + pair.Key;
+                        invalidRegions += (invalidRegions.Length > 0 ? ", " : "") + pair.Key;
 
-                        logExceptions.Add("Invalid Regions: " + invalid_Regions);
+                        logExceptions.Add("Invalid Regions: " + invalidRegions);
 
-                        invalid_Regions = string.Empty;
+                        invalidRegions = string.Empty;
 
                         failed = true;
                     }
                 }
             }
 
-            arena_Count = Active_Arenas.Count;
+            arenaCount = ActiveArenas.Count;
 
-            if (arena_Count > 0)
-                Bosses_Toggled = boss_Config.AutoStart_Enabled;
+            if (arenaCount > 0)
+                BossesToggled = bossConfig.AutoStartEnabled;
 
-            if (arena_Count == 0)
+            if (arenaCount == 0)
                 logExceptions.Add("No arenas defined");
 
             if (!failed)
@@ -78,116 +94,116 @@ namespace Auto_Boss
         }*/
         #endregion
 
-        public static void reloadConfig(bool console = false, TSPlayer receiver = null)
+        public void reloadConfig(bool console = false, TSPlayer receiver = null)
         {
-            (boss_Config = Boss_Config.Read(config_Path)).Write(config_Path);
+            (bossConfig = BossConfig.Read(configPath)).Write(configPath);
 
-            foreach (KeyValuePair<string, bool> pair in boss_Config.Boss_Arenas)
+            foreach (KeyValuePair<string, bool> pair in bossConfig.BossArenas)
             {
                 if (pair.Value)
                 {
                     if (TShock.Regions.GetRegionByName(pair.Key) != null)
                     {
-                        if (!Active_Arenas.Contains(TShock.Regions.GetRegionByName(pair.Key)))
-                            Active_Arenas.Add(TShock.Regions.GetRegionByName(pair.Key));
+                        if (!ActiveArenas.Contains(TShock.Regions.GetRegionByName(pair.Key)))
+                            ActiveArenas.Add(TShock.Regions.GetRegionByName(pair.Key));
                     }
                     else
-                        invalid_Regions += (invalid_Regions.Length > 0 ? "', '" : "'") + pair.Key;
+                        invalidRegions += (invalidRegions.Length > 0 ? "', '" : "'") + pair.Key;
                 }
                 else
-                    if (!Inactive_Arenas.Contains(pair.Key))
-                        Inactive_Arenas.Add(pair.Key);
+                    if (!InactiveArenas.Contains(pair.Key))
+                        InactiveArenas.Add(pair.Key);
             }
 
-            foreach (string arena in Inactive_Arenas)
+            foreach (string arena in InactiveArenas)
             {
-                if (!boss_Config.Boss_Arenas.ContainsKey(arena))
+                if (!bossConfig.BossArenas.ContainsKey(arena))
                 {
-                    Inactive_Arenas.Remove(arena);
+                    InactiveArenas.Remove(arena);
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(invalid_Regions))
+            if (!string.IsNullOrWhiteSpace(invalidRegions))
             {
-                invalid_Regions = invalid_Regions + "'";
+                invalidRegions = invalidRegions + "'";
 
                 if (console)
-                    TSServerPlayer.Server.SendErrorMessage("[AutoBoss+] Invalid regions found: {0}", invalid_Regions);
+                    TSServerPlayer.Server.SendErrorMessage("[AutoBoss+] Invalid regions found: {0}", invalidRegions);
                 else if (receiver != null)
-                    receiver.SendErrorMessage("[AutoBoss+] Invalid regions found: {0}", invalid_Regions);
+                    receiver.SendErrorMessage("[AutoBoss+] Invalid regions found: {0}", invalidRegions);
             }
 
-            invalid_Regions = string.Empty;
+            invalidRegions = string.Empty;
 
-            foreach (Toggle_Obj t in boss_Config.Boss_Toggles)
+            foreach (ToggleObj t in bossConfig.BossToggles)
             {
                 if (t.type == "day" && t.enabled)
-                    Boss_Timer.dayBossEnabled = true;
+                    AutoBoss.Timer.dayBossEnabled = true;
                 else
-                    Boss_Timer.dayBossEnabled = false;
+                    AutoBoss.Timer.dayBossEnabled = false;
 
                 if (t.type == "night" && t.enabled)
-                    Boss_Timer.nightBossEnabled = true;
+                    AutoBoss.Timer.nightBossEnabled = true;
                 else
-                    Boss_Timer.nightBossEnabled = false;
+                    AutoBoss.Timer.nightBossEnabled = false;
 
                 if (t.type == "special" && t.enabled)
-                    Boss_Timer.specialBossEnabled = true;
+                    AutoBoss.Timer.specialBossEnabled = true;
                 else
-                    Boss_Timer.specialBossEnabled = false;
+                    AutoBoss.Timer.specialBossEnabled = false;
             }
 
-            foreach (Toggle_Obj t in boss_Config.Minion_Toggles)
+            foreach (ToggleObj t in bossConfig.MinionToggles)
             {
                 if (t.type == "day" && t.enabled)
-                    Boss_Timer.dayMinionEnabled = true;
+                    AutoBoss.Timer.dayMinionEnabled = true;
                 else
-                    Boss_Timer.dayMinionEnabled = false;
+                    AutoBoss.Timer.dayMinionEnabled = false;
 
                 if (t.type == "night" && t.enabled)
-                    Boss_Timer.nightMinionEnabled = true;
+                    AutoBoss.Timer.nightMinionEnabled = true;
                 else
-                    Boss_Timer.nightMinionEnabled = false;
+                    AutoBoss.Timer.nightMinionEnabled = false;
 
                 if (t.type == "special" && t.enabled)
-                    Boss_Timer.specialMinionEnabled = true;
-                else 
-                    Boss_Timer.specialMinionEnabled = false;
+                    AutoBoss.Timer.specialMinionEnabled = true;
+                else
+                    AutoBoss.Timer.specialMinionEnabled = false;
             }
 
-            arena_Count = Active_Arenas.Count;
+            arenaCount = ActiveArenas.Count;
         }
 
         #region PostInitialize
-        public static void PostInitialize(EventArgs args)
+        public void PostInitialize(EventArgs args)
         {
             reloadConfig(true);
 
 
-            foreach (Toggle_Obj t in boss_Config.Boss_Toggles)
+            foreach (ToggleObj t in bossConfig.BossToggles)
             {
                 if (t.type == "day" && t.enabled)
-                    Boss_Timer.dayBossEnabled = true;
+                    AutoBoss.Timer.dayBossEnabled = true;
                 if (t.type == "night" && t.enabled)
-                    Boss_Timer.nightBossEnabled = true;
+                    AutoBoss.Timer.nightBossEnabled = true;
                 if (t.type == "special" && t.enabled)
-                    Boss_Timer.specialBossEnabled = true;
+                    AutoBoss.Timer.specialBossEnabled = true;
             }
 
-            foreach (Toggle_Obj t in boss_Config.Minion_Toggles)
+            foreach (ToggleObj t in bossConfig.MinionToggles)
             {
                 if (t.type == "day" && t.enabled)
-                    Boss_Timer.dayMinionEnabled = true;
+                    AutoBoss.Timer.dayMinionEnabled = true;
                 if (t.type == "night" && t.enabled)
-                    Boss_Timer.nightMinionEnabled = true;
+                    AutoBoss.Timer.nightMinionEnabled = true;
                 if (t.type == "special" && t.enabled)
-                    Boss_Timer.specialMinionEnabled = true;
+                    AutoBoss.Timer.specialMinionEnabled = true;
             }
         }
         #endregion
 
         #region MultipleError
-        public static void SendMultipleErrors(bool console = false, TSPlayer receiver = null, List<string> errors = null)
+        public void SendMultipleErrors(bool console = false, TSPlayer receiver = null, List<string> errors = null)
         {
             if (errors.Count > 1)
             {

@@ -7,27 +7,27 @@ using Terraria;
 using TShockAPI;
 using TShockAPI.DB;
 
-namespace Auto_Boss
+namespace AutoBoss
 {
-    public class Boss_Events
+    public class BossEvents
     {
-        static Random rnd_Num = new Random();
+        static Random rndNum = new Random();
 
-        public static bool Bosses_Active = false;
-        public static bool Minions_Active = false;
+        public static bool BossesActive = false;
+        public static bool MinionsActive = false;
 
-        #region Day_Battle
-        public static void start_BossBattle_Day()
+        #region DayBattle
+        public static void startBossBattleDay()
         {
             string broadcastString = "Boss selected:";
-            Day_Boss_Set day_Bosses = Boss_Tools.boss_Config.Day_BossList[rnd_Num.Next(0, 
-                Boss_Tools.boss_Config.Day_BossList.Count)];
+            DayBossSet dayBosses = AutoBoss.Tools.bossConfig.DayBossList[rndNum.Next(0, 
+                AutoBoss.Tools.bossConfig.DayBossList.Count)];
 
             var bosses = new Dictionary<int, int>();
-            foreach (Day_Boss_Obj b in day_Bosses.day_Bosses)
+            foreach (DayBossObj b in dayBosses.dayBosses)
             {
                 int npcID = -1;
-                foreach (Region region in Boss_Tools.Active_Arenas)
+                foreach (Region region in AutoBoss.Tools.ActiveArenas)
                 {
                     int arenaX = region.Area.X + (region.Area.Width / 2);
                     int arenaY = region.Area.Y + (region.Area.Height / 2);
@@ -41,10 +41,10 @@ namespace Auto_Boss
                 NPC npc = Main.npc[npcID];
                 bosses.Add(npcID, b.id);
 
-                broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
+                broadcastString += " " + b.amt * AutoBoss.Tools.arenaCount + "x " + npc.name + " +";
             }
 
-            Boss_Tools.boss_List = bosses;
+            AutoBoss.Tools.bossList = bosses;
 
             broadcastString = broadcastString.Remove(broadcastString.Length - 2);
             TSPlayer.All.SendMessage(broadcastString, Color.Crimson);
@@ -53,19 +53,19 @@ namespace Auto_Boss
         }
         #endregion
 
-        #region Special_Battle
-        public static void start_BossBattle_Special()
+        #region SpecialBattle
+        public static void startBossBattleSpecial()
         {
                         string broadcastString = "Boss selected:";
 
-            Special_Boss_Set special_Bosses = Boss_Tools.boss_Config.Special_BossList[rnd_Num.Next(0,
-                Boss_Tools.boss_Config.Special_BossList.Count)];
+            SpecialBossSet specialBosses = AutoBoss.Tools.bossConfig.SpecialBossList[rndNum.Next(0,
+                AutoBoss.Tools.bossConfig.SpecialBossList.Count)];
 
             var bosses = new Dictionary<int, int>();
-            foreach (Special_Boss_Obj b in special_Bosses.special_Bosses)
+            foreach (SpecialBossObj b in specialBosses.specialBosses)
             {
                 int npcID = -1;
-                foreach (Region region in Boss_Tools.Active_Arenas)
+                foreach (Region region in AutoBoss.Tools.ActiveArenas)
                 {
                     int arenaX = region.Area.X + (region.Area.Width / 2);
                     int arenaY = region.Area.Y + (region.Area.Height / 2);
@@ -79,10 +79,10 @@ namespace Auto_Boss
                 NPC npc = Main.npc[npcID];
                 bosses.Add(npcID, b.id);
 
-                broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
+                broadcastString += " " + b.amt * AutoBoss.Tools.arenaCount + "x " + npc.name + " +";
             }
 
-            Boss_Tools.boss_List = bosses;
+            AutoBoss.Tools.bossList = bosses;
 
             broadcastString = broadcastString.Remove(broadcastString.Length - 2);
             TSPlayer.All.SendMessage(broadcastString, Color.Crimson);
@@ -91,18 +91,18 @@ namespace Auto_Boss
         }
         #endregion
 
-        #region Night_Battle
-        public static void start_BossBattle_Night()
+        #region NightBattle
+        public static void startBossBattleNight()
         {
             string broadcastString = "Boss selected:";
-            Night_Boss_Set night_Bosses = Boss_Tools.boss_Config.Night_BossList[rnd_Num.Next(0,
-                Boss_Tools.boss_Config.Night_BossList.Count)];
+            NightBossSet nightBosses = AutoBoss.Tools.bossConfig.NightBossList[rndNum.Next(0,
+                AutoBoss.Tools.bossConfig.NightBossList.Count)];
 
             var bosses = new Dictionary<int, int>();
-            foreach (Night_Boss_Obj b in night_Bosses.night_Bosses)
+            foreach (NightBossObj b in nightBosses.nightBosses)
             {
                 int npcID = -1;
-                foreach (Region region in Boss_Tools.Active_Arenas)
+                foreach (Region region in AutoBoss.Tools.ActiveArenas)
                 {
                     int arenaX = region.Area.X + (region.Area.Width / 2);
                     int arenaY = region.Area.Y + (region.Area.Height / 2);
@@ -117,10 +117,10 @@ namespace Auto_Boss
 
                 bosses.Add(npcID, b.id);
 
-                broadcastString += " " + b.amt * Boss_Tools.arena_Count + "x " + npc.name + " +";
+                broadcastString += " " + b.amt * AutoBoss.Tools.arenaCount + "x " + npc.name + " +";
             }
 
-            Boss_Tools.boss_List = bosses;
+            AutoBoss.Tools.bossList = bosses;
 
             broadcastString = broadcastString.Remove(broadcastString.Length - 2);
             TSPlayer.All.SendMessage(broadcastString, Color.Crimson);
@@ -129,13 +129,13 @@ namespace Auto_Boss
         }
         #endregion
 
-        #region Day_Minions
-        public static void start_DayMinion_Spawns()
+        #region DayMinions
+        public static void startDayMinionSpawns()
         {
-            var m = Boss_Tools.boss_Config.Day_MinionList[rnd_Num.Next(0, Boss_Tools.boss_Config.Day_MinionList.Count)];
+            var m = AutoBoss.Tools.bossConfig.DayMinionList[rndNum.Next(0, AutoBoss.Tools.bossConfig.DayMinionList.Count)];
             
             int npcID = -1;
-            foreach (Region region in Boss_Tools.Active_Arenas)
+            foreach (Region region in AutoBoss.Tools.ActiveArenas)
             {
                 int arenaX = region.Area.X + (region.Area.Width / 2);
                 int arenaY = region.Area.Y + (region.Area.Height / 2);
@@ -146,27 +146,27 @@ namespace Auto_Boss
                 }
             }
 
-            Boss_Tools.minion_List.Add(npcID, m.id);
+            AutoBoss.Tools.minionList.Add(npcID, m.id);
 
             NPC npc = Main.npc[npcID];
 
-            if (Boss_Tools.boss_Config.Announce_Minions)
+            if (AutoBoss.Tools.bossConfig.AnnounceMinions)
             {
-                TSPlayer.All.SendMessage("Spawning Minions: " + m.amt * Boss_Tools.arena_Count + "x " +
+                TSPlayer.All.SendMessage("Spawning Minions: " + m.amt * AutoBoss.Tools.arenaCount + "x " +
                     npc.name + "!", Color.CadetBlue);
             }
         }
         #endregion
 
-        #region Special_Minions
-        public static void start_SpecialMinion_Spawns()
+        #region SpecialMinions
+        public static void startSpecialMinionSpawns()
         {
-            var m = Boss_Tools.boss_Config.Day_MinionList[rnd_Num.Next(0, Boss_Tools.boss_Config.Special_MinionList.Count)];
+            var m = AutoBoss.Tools.bossConfig.DayMinionList[rndNum.Next(0, AutoBoss.Tools.bossConfig.SpecialMinionList.Count)];
             
-            int henchmenNumber = rnd_Num.Next(m.amt / 2, (int)((m.amt * 2) / 1.5));
+            int henchmenNumber = rndNum.Next(m.amt / 2, (int)((m.amt * 2) / 1.5));
 
             int npcID = -1;
-            foreach (Region region in Boss_Tools.Active_Arenas)
+            foreach (Region region in AutoBoss.Tools.ActiveArenas)
             {
                 int arenaX = region.Area.X + (region.Area.Width / 2);
                 int arenaY = region.Area.Y + (region.Area.Height / 2);
@@ -177,27 +177,27 @@ namespace Auto_Boss
                 }
             }
 
-            Boss_Tools.minion_List.Add(npcID, m.id);
+            AutoBoss.Tools.minionList.Add(npcID, m.id);
 
             NPC npc = Main.npc[npcID];
 
-            if (Boss_Tools.boss_Config.Announce_Minions)
+            if (AutoBoss.Tools.bossConfig.AnnounceMinions)
             {
-                TSPlayer.All.SendMessage("Spawning Minions: " + henchmenNumber * Boss_Tools.arena_Count + "x " +
+                TSPlayer.All.SendMessage("Spawning Minions: " + henchmenNumber * AutoBoss.Tools.arenaCount + "x " +
                     npc.name + "!", Color.CadetBlue);
             }
         }
         #endregion
 
-        #region Night_Minions
-        public static void start_NightMinion_Spawns()
+        #region NightMinions
+        public static void startNightMinionSpawns()
         {
-            var m = Boss_Tools.boss_Config.Day_MinionList[rnd_Num.Next(0, Boss_Tools.boss_Config.Night_MinionList.Count)];
+            var m = AutoBoss.Tools.bossConfig.DayMinionList[rndNum.Next(0, AutoBoss.Tools.bossConfig.NightMinionList.Count)];
 
-            int henchmenNumber = rnd_Num.Next(m.amt / 2, (int)((m.amt * 2) / 1.5));
+            int henchmenNumber = rndNum.Next(m.amt / 2, (int)((m.amt * 2) / 1.5));
 
             int npcID = -1;
-            foreach (Region region in Boss_Tools.Active_Arenas)
+            foreach (Region region in AutoBoss.Tools.ActiveArenas)
             {
                 int arenaX = region.Area.X + (region.Area.Width / 2);
                 int arenaY = region.Area.Y + (region.Area.Height / 2);
@@ -208,13 +208,13 @@ namespace Auto_Boss
                 }
             }
             
-            Boss_Tools.minion_List.Add(npcID, m.id);
+            AutoBoss.Tools.minionList.Add(npcID, m.id);
 
             NPC npc = Main.npc[npcID];
 
-            if (Boss_Tools.boss_Config.Announce_Minions)
+            if (AutoBoss.Tools.bossConfig.AnnounceMinions)
             {
-                TSPlayer.All.SendMessage("Spawning Minions: " + henchmenNumber * Boss_Tools.arena_Count + "x " +
+                TSPlayer.All.SendMessage("Spawning Minions: " + henchmenNumber * AutoBoss.Tools.arenaCount + "x " +
                     npc.name + "!", Color.CadetBlue);
             }
         }

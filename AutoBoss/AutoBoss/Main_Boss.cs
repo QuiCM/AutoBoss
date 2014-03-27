@@ -11,11 +11,14 @@ using TShockAPI;
 using TShockAPI.DB;
 using System.Reflection;
 
-namespace Auto_Boss
+namespace AutoBoss
 {
-    [ApiVersion(1, 14)]
+    [ApiVersion(1, 15)]
     public class AutoBoss : TerrariaPlugin
     {
+        public static BossTools Tools = BossTools.Instance;
+        public static BossTimer Timer = BossTimer.Instance;
+
         #region TerrariaPlugin
         public override Version Version
         {
@@ -40,7 +43,7 @@ namespace Auto_Boss
         public override void Initialize()
         {
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
-            ServerApi.Hooks.GamePostInitialize.Register(this, Boss_Tools.PostInitialize);
+            ServerApi.Hooks.GamePostInitialize.Register(this, AutoBoss.Tools.PostInitialize);
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreet);
         }
 
@@ -51,7 +54,7 @@ namespace Auto_Boss
 
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
                 ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnGreet);
-                ServerApi.Hooks.GamePostInitialize.Deregister(this, Boss_Tools.PostInitialize);
+                ServerApi.Hooks.GamePostInitialize.Deregister(this, AutoBoss.Tools.PostInitialize);
             }
             base.Dispose(disposing);
         }
@@ -60,24 +63,24 @@ namespace Auto_Boss
             : base(game)
         {
             Order = -10;
-            Boss_Tools.boss_Config = new Boss_Config();
+            Tools.bossConfig = new BossConfig();
         }
         #endregion
 
         #region OnInitialize
         public void OnInitialize(EventArgs args)
         {
-            Commands.ChatCommands.Add(new Command("boss.root", Boss_Commands.Boss_Command, "boss")
+            Commands.ChatCommands.Add(new Command("boss.root", BossCommands.BossCommand, "boss")
                 {
                     HelpText = "Toggles automatic boss spawns; Reloads the configuration; Lists bosses and minions spawned by the plugin"
                 });
 
-            (Boss_Tools.boss_Config = Boss_Config.Read(Boss_Tools.config_Path)).Write(Boss_Tools.config_Path);
+            (Tools.bossConfig = BossConfig.Read(Tools.configPath)).Write(Tools.configPath);
 
 
-            Boss_Timer.boss_Timer.Elapsed += new ElapsedEventHandler(Boss_Timer.boss_Timer_Elapsed);
+            Timer.bossTimer.Elapsed += new ElapsedEventHandler(Timer.bossTimerElapsed);
 
-            Boss_Timer.minionTimer.Elapsed += new ElapsedEventHandler(Boss_Timer.Minion_Elapsed_Event);
+            Timer.minionTimer.Elapsed += new ElapsedEventHandler(Timer.MinionElapsedEvent);
         }
         #endregion
 
@@ -86,10 +89,10 @@ namespace Auto_Boss
         {
             if (TShock.Players[args.Who] != null)
             {
-                if (Boss_Tools.boss_Config.AutoStart_Enabled)
+                if (AutoBoss.Tools.bossConfig.AutoStartEnabled)
                     if (TShock.Players[0].Index == args.Who && TShock.Players.Length < 2)
-                        if (!Boss_Timer.boss_Timer.Enabled)
-                            Boss_Timer.boss_Timer.Enabled = true;
+                        if (!Timer.bossTimer.Enabled)
+                            Timer.bossTimer.Enabled = true;
             }
         }
         #endregion

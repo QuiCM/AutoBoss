@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Terraria;
 using TShockAPI;
 
-namespace Auto_Boss
+namespace AutoBoss
 {
     public class timerObj
     {
@@ -25,40 +25,55 @@ namespace Auto_Boss
         }
     }
 
-    public class Boss_Timer
+    public class BossTimer
     {
-        public static Timer boss_Timer  = new Timer(Boss_Tools.boss_Config.Message_Interval * 1000);
+        private BossTimer() { }
 
-        public static bool dayBossEnabled = false;
-        public static bool nightBossEnabled = false;
-        public static bool specialBossEnabled = false;
+        private static volatile BossTimer instance = null;
 
-        public static bool dayMinionEnabled = false;
-        public static bool nightMinionEnabled = false;
-        public static bool specialMinionEnabled = false;
+        public static BossTimer Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new BossTimer();
 
-        public static bool MinionTimerRunning = false;
+                return instance;
+            }
+        }
 
-        public static bool bossesActive = false;
+        public Timer bossTimer  = new Timer(AutoBoss.Tools.bossConfig.MessageInterval * 1000);
 
-        internal static timerObj ticker = new timerObj(-1, "day", false, 10);
+        public bool dayBossEnabled = false;
+        public bool nightBossEnabled = false;
+        public bool specialBossEnabled = false;
+
+        public bool dayMinionEnabled = false;
+        public bool nightMinionEnabled = false;
+        public bool specialMinionEnabled = false;
+
+        public bool MinionTimerRunning = false;
+
+        public bool bossesActive = false;
+
+        internal timerObj ticker = new timerObj(-1, "day", false, 10);
 
 
-        public static void boss_Timer_Elapsed(object sender, ElapsedEventArgs e)
+        public void bossTimerElapsed(object sender, ElapsedEventArgs e)
         {
             bool bossActive = false;
-            foreach (KeyValuePair<int, int> pair in Boss_Tools.boss_List)
+            foreach (KeyValuePair<int, int> pair in AutoBoss.Tools.bossList)
                 if (Main.npc[pair.Key].type == pair.Value && Main.npc[pair.Key].active)
                     bossActive = true;
 
 
             bossesActive = bossActive;
 
-            if (!Boss_Tools.Bosses_Toggled)
+            if (!AutoBoss.Tools.BossesToggled)
             {
                 Log.ConsoleInfo("[AutoBoss+] Timer Disabled: Boss toggle disabled");
-                boss_Timer.Enabled = false;
-                Boss_Tools.Bosses_Toggled = false;
+                bossTimer.Enabled = false;
+                AutoBoss.Tools.BossesToggled = false;
                 ticker.count = -1;
                 return;
             }
@@ -66,8 +81,8 @@ namespace Auto_Boss
             //if (TShock.Players[0] == null)
             //{
             //    Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players online");
-            //    boss_Timer.Enabled = false;
-            //    Boss_Tools.Bosses_Toggled = false;
+            //    bossTimer.Enabled = false;
+            //    AutoBoss.Tools.BossesToggled = false;
             //    ticker.count = -1;
             //    return;
             //}
@@ -75,14 +90,14 @@ namespace Auto_Boss
             if (Main.dayTime && dayBossEnabled)
             {
                 ticker.type = "day";
-                ticker.maxCount = Boss_Tools.boss_Config.DayTimer_Text.Length - 1;
+                ticker.maxCount = AutoBoss.Tools.bossConfig.DayTimerText.Length - 1;
                 ticker.enabled = true;
             }
             if (!Main.dayTime && !Main.raining && !Main.bloodMoon && !Main.eclipse && !Main.pumpkinMoon &&
                 !Main.snowMoon && Main.invasionType == 0 && nightBossEnabled)
             {
                 ticker.type = "night";
-                ticker.maxCount = Boss_Tools.boss_Config.NightTimer_Text.Length - 1;
+                ticker.maxCount = AutoBoss.Tools.bossConfig.NightTimerText.Length - 1;
                 ticker.enabled = true;
             }
 
@@ -90,7 +105,7 @@ namespace Auto_Boss
                             Main.snowMoon || Main.invasionType > 0 && specialBossEnabled)
             {
                 ticker.type = "special";
-                ticker.maxCount = Boss_Tools.boss_Config.SpecialTimer_Text.Length - 1;
+                ticker.maxCount = AutoBoss.Tools.bossConfig.SpecialTimerText.Length - 1;
                 ticker.enabled = true;
             }
 
@@ -102,30 +117,30 @@ namespace Auto_Boss
 
                     if (ticker.type == "day" && Main.dayTime)
                     {
-                        if (Boss_Tools.boss_Config.Enable_DayTimer_Text)
+                        if (AutoBoss.Tools.bossConfig.EnableDayTimerText)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.count],
+                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.DayTimerText[ticker.count],
                                     Color.YellowGreen);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.DayTimer_Text[ticker.maxCount],
+                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.DayTimerText[ticker.maxCount],
                                     Color.Crimson);
 
                                 if (dayMinionEnabled)
                                     if (!MinionTimerRunning && !minionTimer.Enabled)
                                         minionTimer.Enabled = true;
 
-                                Boss_Events.start_BossBattle_Day();
+                                BossEvents.startBossBattleDay();
 
-                                if (Boss_Tools.boss_Config.Continuous_Boss)
+                                if (AutoBoss.Tools.bossConfig.ContinuousBoss)
                                     ticker.count = -1;
                                 else
                                 {
-                                    TSPlayer.All.SendMessage(Boss_Tools.boss_Config.DayTimer_Finished,
+                                    TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.DayTimerFinished,
                                         Color.LightBlue);
-                                    boss_Timer.Enabled = false;
+                                    bossTimer.Enabled = false;
                                 }
                             }
                         }
@@ -133,29 +148,29 @@ namespace Auto_Boss
                     if (ticker.type == "night" && !Main.dayTime && !Main.raining && !Main.bloodMoon && 
                         !Main.eclipse && !Main.pumpkinMoon && !Main.snowMoon && Main.invasionType < 1)
                     {
-                        if (Boss_Tools.boss_Config.Enable_NightTimer_Text)
+                        if (AutoBoss.Tools.bossConfig.EnableNightTimerText)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.count],
+                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.NightTimerText[ticker.count],
                                     Color.DarkMagenta);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.NightTimer_Text[ticker.maxCount],
+                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.NightTimerText[ticker.maxCount],
                                    Color.Crimson);
 
                                 if (nightBossEnabled)
                                     if (!MinionTimerRunning && !minionTimer.Enabled)
                                         minionTimer.Enabled = true;
 
-                                Boss_Events.start_BossBattle_Night();
-                                if (Boss_Tools.boss_Config.Continuous_Boss)
+                                BossEvents.startBossBattleNight();
+                                if (AutoBoss.Tools.bossConfig.ContinuousBoss)
                                     ticker.count = -1;
                                 else
                                 {
-                                    TSPlayer.All.SendMessage(Boss_Tools.boss_Config.NightTimer_Finished,
+                                    TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.NightTimerFinished,
                                         Color.LightBlue);
-                                    boss_Timer.Enabled = false;
+                                    bossTimer.Enabled = false;
                                 }
                             }
                         }
@@ -163,28 +178,28 @@ namespace Auto_Boss
                     if (ticker.type == "special" && Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
                             Main.snowMoon || Main.invasionType > 0)
                     {
-                        if (Boss_Tools.boss_Config.Enable_SpecialTimer_Text)
+                        if (AutoBoss.Tools.bossConfig.EnableSpecialTimerText)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.count],
+                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.SpecialTimerText[ticker.count],
                                    Color.Orange);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendMessage(Boss_Tools.boss_Config.SpecialTimer_Text[ticker.maxCount],
+                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.SpecialTimerText[ticker.maxCount],
                                     Color.Crimson);
 
                                 if (specialMinionEnabled)
                                     if (!MinionTimerRunning && !minionTimer.Enabled)
                                         minionTimer.Enabled = true;
 
-                                Boss_Events.start_BossBattle_Special();
-                                if (Boss_Tools.boss_Config.Continuous_Boss)
+                                BossEvents.startBossBattleSpecial();
+                                if (AutoBoss.Tools.bossConfig.ContinuousBoss)
                                     ticker.count = -1;
                                 else
                                 {
-                                    boss_Timer.Enabled = false;
-                                    TSPlayer.All.SendMessage(Boss_Tools.boss_Config.SpecialTimer_Finished,
+                                    bossTimer.Enabled = false;
+                                    TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.SpecialTimerFinished,
                                         Color.LightBlue);
                                 }
                             }
@@ -195,23 +210,23 @@ namespace Auto_Boss
         }
 
 
-        public static Timer minionTimer = new Timer(new Random().Next(Boss_Tools.boss_Config.Minions_Spawn_Timer[0], 
-            Boss_Tools.boss_Config.Minions_Spawn_Timer[1]) * 1000);
+        public Timer minionTimer = new Timer(new Random().Next(AutoBoss.Tools.bossConfig.MinionsSpawnTimer[0], 
+            AutoBoss.Tools.bossConfig.MinionsSpawnTimer[1]) * 1000);
 
-        //(Boss_Tools.boss_Config.Minions_Spawn_Timer[0] / (Boss_Tools.boss_Config.Minions_Spawn_Timer[1] * 1.0)
+        //(AutoBoss.Tools.bossConfig.MinionsSpawnTimer[0] / (AutoBoss.Tools.bossConfig.MinionsSpawnTimer[1] * 1.0)
 
-        public static void Minion_Elapsed_Event(object sender, ElapsedEventArgs args)
+        public void MinionElapsedEvent(object sender, ElapsedEventArgs args)
         {
             if (Main.dayTime && dayMinionEnabled && bossesActive)
-                Boss_Events.start_DayMinion_Spawns();
+                BossEvents.startDayMinionSpawns();
 
             if (!Main.dayTime && !Main.raining && !Main.bloodMoon && !Main.eclipse && bossesActive
                 && !Main.pumpkinMoon && !Main.snowMoon && Main.invasionType == 0 && nightMinionEnabled)
-                Boss_Events.start_NightMinion_Spawns();
+                BossEvents.startNightMinionSpawns();
 
             if (Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
                                     Main.snowMoon || Main.invasionSize > 0 && specialMinionEnabled && bossesActive)
-                Boss_Events.start_SpecialMinion_Spawns();
+                BossEvents.startSpecialMinionSpawns();
         }
     }
 }

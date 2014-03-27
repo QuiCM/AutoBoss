@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using Terraria;
 using TShockAPI;
 
-namespace Auto_Boss
+namespace AutoBoss
 {
-    public class Boss_Commands
+    public class BossCommands
     {
-        public static void Boss_Command(CommandArgs args)
+        public static void BossCommand(CommandArgs args)
         {
             if (args.Parameters.Count < 1 || args.Parameters.Count > 3)
             {
@@ -23,25 +23,25 @@ namespace Auto_Boss
                 {
                     case "toggle":
                         {
-                            Boss_Tools.Bosses_Toggled = !Boss_Tools.Bosses_Toggled;
+                            AutoBoss.Tools.BossesToggled = !AutoBoss.Tools.BossesToggled;
 
-                            if (Boss_Tools.Bosses_Toggled)
+                            if (AutoBoss.Tools.BossesToggled)
                             {
-                                foreach (KeyValuePair<string, bool> pair in Boss_Tools.boss_Config.Boss_Arenas)
+                                foreach (KeyValuePair<string, bool> pair in AutoBoss.Tools.bossConfig.BossArenas)
                                     if (!TShock.Regions.Regions.Contains(TShock.Regions.GetRegionByName(pair.Key))
                                         && pair.Value == true)
                                     {
                                         args.Player.SendErrorMessage("Error: Region {0} is undefined", pair.Key);
                                         args.Player.SendErrorMessage("Boss battles disabled");
-                                        Boss_Tools.Bosses_Toggled = false;
+                                        AutoBoss.Tools.BossesToggled = false;
                                         return;
                                     }
 
-                                if (!Boss_Timer.boss_Timer.Enabled)
-                                    Boss_Timer.boss_Timer.Enabled = true;
+                                if (!AutoBoss.Timer.bossTimer.Enabled)
+                                    AutoBoss.Timer.bossTimer.Enabled = true;
                             }
 
-                            args.Player.SendSuccessMessage((Boss_Tools.Bosses_Toggled ? "Enabled" : "Disabled") +
+                            args.Player.SendSuccessMessage((AutoBoss.Tools.BossesToggled ? "Enabled" : "Disabled") +
                                 " automatic boss spawnings");
 
                             break;
@@ -49,10 +49,10 @@ namespace Auto_Boss
                     case "reload":
                         {
                             if (args.Player == TSPlayer.Server)
-                                Boss_Tools.reloadConfig(true);
+                                AutoBoss.Tools.reloadConfig(true);
                             else
-                                Boss_Tools.reloadConfig(false, args.Player);
-                            args.Player.SendSuccessMessage("Reloaded Boss_Config.json");
+                                AutoBoss.Tools.reloadConfig(false, args.Player);
+                            args.Player.SendSuccessMessage("Reloaded BossConfig.json");
                             break;
                         }
 
@@ -66,12 +66,12 @@ namespace Auto_Boss
                                     case "bosses":
                                     case "boss":
                                         {
-                                            int page_Number;
-                                            if (!PaginationTools.TryParsePageNumber(args.Parameters, 2, args.Player, out page_Number))
+                                            int pageNumber;
+                                            if (!PaginationTools.TryParsePageNumber(args.Parameters, 2, args.Player, out pageNumber))
                                                 return;
 
-                                            PaginationTools.SendPage(args.Player, page_Number,
-                                                PaginationTools.BuildLinesFromTerms(getDictionary(Boss_Tools.boss_List)),
+                                            PaginationTools.SendPage(args.Player, pageNumber,
+                                                PaginationTools.BuildLinesFromTerms(getDictionary(AutoBoss.Tools.bossList)),
                                                 new PaginationTools.Settings
                                                 {
                                                     HeaderFormat = "Boss List: {0}/{1}",
@@ -86,12 +86,12 @@ namespace Auto_Boss
                                     case "mobs":
                                     case "minions":
                                         {
-                                            int page_Number;
-                                            if (!PaginationTools.TryParsePageNumber(args.Parameters, 2, args.Player, out page_Number))
+                                            int pageNumber;
+                                            if (!PaginationTools.TryParsePageNumber(args.Parameters, 2, args.Player, out pageNumber))
                                                 return;
 
-                                            PaginationTools.SendPage(args.Player, page_Number,
-                                                PaginationTools.BuildLinesFromTerms(getDictionary(Boss_Tools.minion_List)),
+                                            PaginationTools.SendPage(args.Player, pageNumber,
+                                                PaginationTools.BuildLinesFromTerms(getDictionary(AutoBoss.Tools.minionList)),
                                                 new PaginationTools.Settings
                                                 {
                                                     HeaderFormat = "Minion List: {0}/{1}",
@@ -119,31 +119,31 @@ namespace Auto_Boss
 
                     case "config":
                         {
-                            int page_Number;
+                            int pageNumber;
 
                             #region Configuration viewing
                             List<object> SetupLines = new List<object>();
-                            SetupLines.Add("Auto-Start enabled: " + Boss_Tools.boss_Config.AutoStart_Enabled);
-                            SetupLines.Add("Continuous boss spawning: " + Boss_Tools.boss_Config.Continuous_Boss);
-                            SetupLines.Add("Interval between boss messages: " + Boss_Tools.boss_Config.Message_Interval);
-                            SetupLines.Add("Text enabled on day-time bosses: " + Boss_Tools.boss_Config.Enable_DayTimer_Text);
-                            SetupLines.Add("Text enabled on night-time bosses: " + Boss_Tools.boss_Config.Enable_DayTimer_Text);
-                            SetupLines.Add("Text enabled on special event bosses: " + Boss_Tools.boss_Config.Enable_DayTimer_Text);
-                            SetupLines.Add("Text announcement on minion spawn: " + Boss_Tools.boss_Config.Announce_Minions);
+                            SetupLines.Add("Auto-Start enabled: " + AutoBoss.Tools.bossConfig.AutoStartEnabled);
+                            SetupLines.Add("Continuous boss spawning: " + AutoBoss.Tools.bossConfig.ContinuousBoss);
+                            SetupLines.Add("Interval between boss messages: " + AutoBoss.Tools.bossConfig.MessageInterval);
+                            SetupLines.Add("Text enabled on day-time bosses: " + AutoBoss.Tools.bossConfig.EnableDayTimerText);
+                            SetupLines.Add("Text enabled on night-time bosses: " + AutoBoss.Tools.bossConfig.EnableDayTimerText);
+                            SetupLines.Add("Text enabled on special event bosses: " + AutoBoss.Tools.bossConfig.EnableDayTimerText);
+                            SetupLines.Add("Text announcement on minion spawn: " + AutoBoss.Tools.bossConfig.AnnounceMinions);
                             SetupLines.Add("Minion types enabled: " + CheckMobTypes);
                             SetupLines.Add("Boss types enabled: " + CheckBossTypes);
-                            SetupLines.Add("Minions spawn every " + Boss_Tools.boss_Config.Minions_Spawn_Timer[0] + " to " +
-                                Boss_Tools.boss_Config.Minions_Spawn_Timer[1] + " seconds");
-                            SetupLines.Add("Boss countdown timer enabled: " + Boss_Tools.Bosses_Toggled);
-                            SetupLines.Add("There " + (Boss_Tools.arena_Count > 1 || Boss_Tools.arena_Count == 0 ? "are" : "is") + " currently " +
-                                Boss_Tools.arena_Count + " active " + (Boss_Tools.arena_Count > 1 || Boss_Tools.arena_Count == 0 ? "arenas" : "arena"));
+                            SetupLines.Add("Minions spawn every " + AutoBoss.Tools.bossConfig.MinionsSpawnTimer[0] + " to " +
+                                AutoBoss.Tools.bossConfig.MinionsSpawnTimer[1] + " seconds");
+                            SetupLines.Add("Boss countdown timer enabled: " + AutoBoss.Tools.BossesToggled);
+                            SetupLines.Add("There " + (AutoBoss.Tools.arenaCount > 1 || AutoBoss.Tools.arenaCount == 0 ? "are" : "is") + " currently " +
+                                AutoBoss.Tools.arenaCount + " active " + (AutoBoss.Tools.arenaCount > 1 || AutoBoss.Tools.arenaCount == 0 ? "arenas" : "arena"));
                             #endregion
 
-                            if (!PaginationTools.TryParsePageNumber(args.Parameters, 1, args.Player, out page_Number))
+                            if (!PaginationTools.TryParsePageNumber(args.Parameters, 1, args.Player, out pageNumber))
                                 return;
 
                             else
-                                PaginationTools.SendPage(args.Player, page_Number,
+                                PaginationTools.SendPage(args.Player, pageNumber,
                                 PaginationTools.BuildLinesFromTerms(SetupLines), new PaginationTools.Settings
                                 {
                                     HeaderFormat = "AutoBoss+ setup: {0}/{1}",
@@ -170,7 +170,7 @@ namespace Auto_Boss
             get
             {
                 List<string> enabled = new List<string>();
-                foreach (Toggle_Obj t in Boss_Tools.boss_Config.Minion_Toggles)
+                foreach (ToggleObj t in AutoBoss.Tools.bossConfig.MinionToggles)
                 {
                     if (t.enabled && !t.type.StartsWith("please"))
                         enabled.Add(t.type);
@@ -184,7 +184,7 @@ namespace Auto_Boss
             get
             {
                 List<string> enabled = new List<string>();
-                foreach (Toggle_Obj t in Boss_Tools.boss_Config.Minion_Toggles)
+                foreach (ToggleObj t in AutoBoss.Tools.bossConfig.MinionToggles)
                 {
                     if (t.enabled && !t.type.StartsWith("please"))
                         enabled.Add(t.type);
