@@ -25,7 +25,7 @@ namespace AutoBoss
         }
     }
 
-    public class BossTimer
+    public class BossTimer : IDisposable
     {
         private BossTimer() { }
 
@@ -227,6 +227,12 @@ namespace AutoBoss
             if (Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
                                     Main.snowMoon || Main.invasionSize > 0 && specialMinionEnabled && bossesActive)
                 BossEvents.startSpecialMinionSpawns();
+        }
+
+        public void Dispose()
+        {
+            bossTimer.Dispose();
+            minionTimer.Dispose();
         }
     }
 }

@@ -27,6 +27,9 @@ namespace AutoBoss
 
                             if (AutoBoss.Tools.BossesToggled)
                             {
+                                if (!AutoBoss.Timer.bossTimer.Enabled)
+                                    AutoBoss.Timer.bossTimer.Enabled = true;
+
                                 foreach (KeyValuePair<string, bool> pair in AutoBoss.Tools.bossConfig.BossArenas)
                                     if (!TShock.Regions.Regions.Contains(TShock.Regions.GetRegionByName(pair.Key))
                                         && pair.Value == true)
@@ -34,11 +37,9 @@ namespace AutoBoss
                                         args.Player.SendErrorMessage("Error: Region {0} is undefined", pair.Key);
                                         args.Player.SendErrorMessage("Boss battles disabled");
                                         AutoBoss.Tools.BossesToggled = false;
+                                        AutoBoss.Timer.bossTimer.Enabled = false;
                                         return;
                                     }
-
-                                if (!AutoBoss.Timer.bossTimer.Enabled)
-                                    AutoBoss.Timer.bossTimer.Enabled = true;
                             }
 
                             args.Player.SendSuccessMessage((AutoBoss.Tools.BossesToggled ? "Enabled" : "Disabled") +
@@ -193,6 +194,11 @@ namespace AutoBoss
             }
         }
 
+        /// <summary>
+        /// Returns a list of npc names from a dictionary containing IDs and types
+        /// </summary>
+        /// <param name="dict"></param>
+        /// <returns></returns>
         public static List<string> getDictionary(Dictionary<int, int> dict)
         {
                             
