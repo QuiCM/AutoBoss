@@ -231,6 +231,7 @@ namespace AutoBoss
 
         public void Dispose()
         {
+            Log.ConsoleInfo("[AutoBoss+] Timers disposed");
             bossTimer.Dispose();
             minionTimer.Dispose();
         }
