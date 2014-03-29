@@ -16,25 +16,8 @@ namespace AutoBoss
 {
     public class BossTools
     {
-        private BossTools() { }
-
-        private static volatile BossTools instance = null;
-
-        public static BossTools Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new BossTools();
-
-                return instance;
-            }
-        }
-
-
-        public BossConfig bossConfig { get; set; }
-        public string configPath { get { return Path.Combine(TShock.SavePath, "BossConfig.json"); } }
-
+        public BossTools() { }
+        
         public string invalidRegions = string.Empty;
 
         public Dictionary<int, int> bossList = new Dictionary<int, int>();
@@ -96,9 +79,10 @@ namespace AutoBoss
 
         public void reloadConfig(bool console = false, TSPlayer receiver = null)
         {
-            (bossConfig = BossConfig.Read(configPath)).Write(configPath);
+            string configPath = Path.Combine(TShock.SavePath, "BossConfig.json");
+            (AutoBoss.bossConfig = BossConfig.Read(configPath)).Write(configPath);
 
-            foreach (KeyValuePair<string, bool> pair in bossConfig.BossArenas)
+            foreach (KeyValuePair<string, bool> pair in AutoBoss.bossConfig.BossArenas)
             {
                 if (pair.Value)
                 {
@@ -117,7 +101,7 @@ namespace AutoBoss
 
             foreach (string arena in InactiveArenas)
             {
-                if (!bossConfig.BossArenas.ContainsKey(arena))
+                if (!AutoBoss.bossConfig.BossArenas.ContainsKey(arena))
                 {
                     InactiveArenas.Remove(arena);
                 }
@@ -135,40 +119,40 @@ namespace AutoBoss
 
             invalidRegions = string.Empty;
 
-            foreach (ToggleObj t in bossConfig.BossToggles)
+            foreach (ToggleObj t in AutoBoss.bossConfig.BossToggles)
             {
                 if (t.type == "day" && t.enabled)
-                    AutoBoss.Timer.dayBossEnabled = true;
+                    AutoBoss.Timers.dayBossEnabled = true;
                 else
-                    AutoBoss.Timer.dayBossEnabled = false;
+                    AutoBoss.Timers.dayBossEnabled = false;
 
                 if (t.type == "night" && t.enabled)
-                    AutoBoss.Timer.nightBossEnabled = true;
+                    AutoBoss.Timers.nightBossEnabled = true;
                 else
-                    AutoBoss.Timer.nightBossEnabled = false;
+                    AutoBoss.Timers.nightBossEnabled = false;
 
                 if (t.type == "special" && t.enabled)
-                    AutoBoss.Timer.specialBossEnabled = true;
+                    AutoBoss.Timers.specialBossEnabled = true;
                 else
-                    AutoBoss.Timer.specialBossEnabled = false;
+                    AutoBoss.Timers.specialBossEnabled = false;
             }
 
-            foreach (ToggleObj t in bossConfig.MinionToggles)
+            foreach (ToggleObj t in AutoBoss.bossConfig.MinionToggles)
             {
                 if (t.type == "day" && t.enabled)
-                    AutoBoss.Timer.dayMinionEnabled = true;
+                    AutoBoss.Timers.dayMinionEnabled = true;
                 else
-                    AutoBoss.Timer.dayMinionEnabled = false;
+                    AutoBoss.Timers.dayMinionEnabled = false;
 
                 if (t.type == "night" && t.enabled)
-                    AutoBoss.Timer.nightMinionEnabled = true;
+                    AutoBoss.Timers.nightMinionEnabled = true;
                 else
-                    AutoBoss.Timer.nightMinionEnabled = false;
+                    AutoBoss.Timers.nightMinionEnabled = false;
 
                 if (t.type == "special" && t.enabled)
-                    AutoBoss.Timer.specialMinionEnabled = true;
+                    AutoBoss.Timers.specialMinionEnabled = true;
                 else
-                    AutoBoss.Timer.specialMinionEnabled = false;
+                    AutoBoss.Timers.specialMinionEnabled = false;
             }
 
             arenaCount = ActiveArenas.Count;
@@ -180,24 +164,24 @@ namespace AutoBoss
             reloadConfig(true);
 
 
-            foreach (ToggleObj t in bossConfig.BossToggles)
+            foreach (ToggleObj t in AutoBoss.bossConfig.BossToggles)
             {
                 if (t.type == "day" && t.enabled)
-                    AutoBoss.Timer.dayBossEnabled = true;
+                    AutoBoss.Timers.dayBossEnabled = true;
                 if (t.type == "night" && t.enabled)
-                    AutoBoss.Timer.nightBossEnabled = true;
+                    AutoBoss.Timers.nightBossEnabled = true;
                 if (t.type == "special" && t.enabled)
-                    AutoBoss.Timer.specialBossEnabled = true;
+                    AutoBoss.Timers.specialBossEnabled = true;
             }
 
-            foreach (ToggleObj t in bossConfig.MinionToggles)
+            foreach (ToggleObj t in AutoBoss.bossConfig.MinionToggles)
             {
                 if (t.type == "day" && t.enabled)
-                    AutoBoss.Timer.dayMinionEnabled = true;
+                    AutoBoss.Timers.dayMinionEnabled = true;
                 if (t.type == "night" && t.enabled)
-                    AutoBoss.Timer.nightMinionEnabled = true;
+                    AutoBoss.Timers.nightMinionEnabled = true;
                 if (t.type == "special" && t.enabled)
-                    AutoBoss.Timer.specialMinionEnabled = true;
+                    AutoBoss.Timers.specialMinionEnabled = true;
             }
         }
         #endregion

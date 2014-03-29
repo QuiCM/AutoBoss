@@ -27,17 +27,17 @@ namespace AutoBoss
 
                             if (AutoBoss.Tools.BossesToggled)
                             {
-                                if (!AutoBoss.Timer.bossTimer.Enabled)
-                                    AutoBoss.Timer.bossTimer.Enabled = true;
+                                if (!AutoBoss.Timers.bossTimer.Enabled)
+                                    AutoBoss.Timers.bossTimer.Enabled = true;
 
-                                foreach (KeyValuePair<string, bool> pair in AutoBoss.Tools.bossConfig.BossArenas)
+                                foreach (KeyValuePair<string, bool> pair in AutoBoss.bossConfig.BossArenas)
                                     if (!TShock.Regions.Regions.Contains(TShock.Regions.GetRegionByName(pair.Key))
                                         && pair.Value == true)
                                     {
                                         args.Player.SendErrorMessage("Error: Region {0} is undefined", pair.Key);
                                         args.Player.SendErrorMessage("Boss battles disabled");
                                         AutoBoss.Tools.BossesToggled = false;
-                                        AutoBoss.Timer.bossTimer.Enabled = false;
+                                        AutoBoss.Timers.bossTimer.Enabled = false;
                                         return;
                                     }
                             }
@@ -124,17 +124,17 @@ namespace AutoBoss
 
                             #region Configuration viewing
                             List<object> SetupLines = new List<object>();
-                            SetupLines.Add("Auto-Start enabled: " + AutoBoss.Tools.bossConfig.AutoStartEnabled);
-                            SetupLines.Add("Continuous boss spawning: " + AutoBoss.Tools.bossConfig.ContinuousBoss);
-                            SetupLines.Add("Interval between boss messages: " + AutoBoss.Tools.bossConfig.MessageInterval);
-                            SetupLines.Add("Text enabled on day-time bosses: " + AutoBoss.Tools.bossConfig.EnableDayTimerText);
-                            SetupLines.Add("Text enabled on night-time bosses: " + AutoBoss.Tools.bossConfig.EnableDayTimerText);
-                            SetupLines.Add("Text enabled on special event bosses: " + AutoBoss.Tools.bossConfig.EnableDayTimerText);
-                            SetupLines.Add("Text announcement on minion spawn: " + AutoBoss.Tools.bossConfig.AnnounceMinions);
+                            SetupLines.Add("Auto-Start enabled: " + AutoBoss.bossConfig.AutoStartEnabled);
+                            SetupLines.Add("Continuous boss spawning: " + AutoBoss.bossConfig.ContinuousBoss);
+                            SetupLines.Add("Interval between boss messages: " + AutoBoss.bossConfig.MessageInterval);
+                            SetupLines.Add("Text enabled on day-time bosses: " + AutoBoss.bossConfig.EnableDayTimerText);
+                            SetupLines.Add("Text enabled on night-time bosses: " + AutoBoss.bossConfig.EnableDayTimerText);
+                            SetupLines.Add("Text enabled on special event bosses: " + AutoBoss.bossConfig.EnableDayTimerText);
+                            SetupLines.Add("Text announcement on minion spawn: " + AutoBoss.bossConfig.AnnounceMinions);
                             SetupLines.Add("Minion types enabled: " + CheckMobTypes);
                             SetupLines.Add("Boss types enabled: " + CheckBossTypes);
-                            SetupLines.Add("Minions spawn every " + AutoBoss.Tools.bossConfig.MinionsSpawnTimer[0] + " to " +
-                                AutoBoss.Tools.bossConfig.MinionsSpawnTimer[1] + " seconds");
+                            SetupLines.Add("Minions spawn every " + AutoBoss.bossConfig.MinionsSpawnTimer[0] + " to " +
+                                AutoBoss.bossConfig.MinionsSpawnTimer[1] + " seconds");
                             SetupLines.Add("Boss countdown timer enabled: " + AutoBoss.Tools.BossesToggled);
                             SetupLines.Add("There " + (AutoBoss.Tools.arenaCount > 1 || AutoBoss.Tools.arenaCount == 0 ? "are" : "is") + " currently " +
                                 AutoBoss.Tools.arenaCount + " active " + (AutoBoss.Tools.arenaCount > 1 || AutoBoss.Tools.arenaCount == 0 ? "arenas" : "arena"));
@@ -171,7 +171,7 @@ namespace AutoBoss
             get
             {
                 List<string> enabled = new List<string>();
-                foreach (ToggleObj t in AutoBoss.Tools.bossConfig.MinionToggles)
+                foreach (ToggleObj t in AutoBoss.bossConfig.MinionToggles)
                 {
                     if (t.enabled && !t.type.StartsWith("please"))
                         enabled.Add(t.type);
@@ -185,7 +185,7 @@ namespace AutoBoss
             get
             {
                 List<string> enabled = new List<string>();
-                foreach (ToggleObj t in AutoBoss.Tools.bossConfig.MinionToggles)
+                foreach (ToggleObj t in AutoBoss.bossConfig.MinionToggles)
                 {
                     if (t.enabled && !t.type.StartsWith("please"))
                         enabled.Add(t.type);

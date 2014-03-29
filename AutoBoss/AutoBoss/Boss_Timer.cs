@@ -25,24 +25,11 @@ namespace AutoBoss
         }
     }
 
-    public class BossTimer : IDisposable
+    public class BossTimer
     {
-        private BossTimer() { }
+        public BossTimer() { }
 
-        private static volatile BossTimer instance = null;
-
-        public static BossTimer Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new BossTimer();
-
-                return instance;
-            }
-        }
-
-        public Timer bossTimer  = new Timer(AutoBoss.Tools.bossConfig.MessageInterval * 1000);
+        public Timer bossTimer = new Timer(AutoBoss.bossConfig.MessageInterval * 1000);
 
         public bool dayBossEnabled = false;
         public bool nightBossEnabled = false;
@@ -78,26 +65,17 @@ namespace AutoBoss
                 return;
             }
 
-            //if (TShock.Players[0] == null)
-            //{
-            //    Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players online");
-            //    bossTimer.Enabled = false;
-            //    AutoBoss.Tools.BossesToggled = false;
-            //    ticker.count = -1;
-            //    return;
-            //}
-
             if (Main.dayTime && dayBossEnabled)
             {
                 ticker.type = "day";
-                ticker.maxCount = AutoBoss.Tools.bossConfig.DayTimerText.Length - 1;
+                ticker.maxCount = AutoBoss.bossConfig.DayTimerText.Length - 1;
                 ticker.enabled = true;
             }
             if (!Main.dayTime && !Main.raining && !Main.bloodMoon && !Main.eclipse && !Main.pumpkinMoon &&
                 !Main.snowMoon && Main.invasionType == 0 && nightBossEnabled)
             {
                 ticker.type = "night";
-                ticker.maxCount = AutoBoss.Tools.bossConfig.NightTimerText.Length - 1;
+                ticker.maxCount = AutoBoss.bossConfig.NightTimerText.Length - 1;
                 ticker.enabled = true;
             }
 
@@ -105,7 +83,7 @@ namespace AutoBoss
                             Main.snowMoon || Main.invasionType > 0 && specialBossEnabled)
             {
                 ticker.type = "special";
-                ticker.maxCount = AutoBoss.Tools.bossConfig.SpecialTimerText.Length - 1;
+                ticker.maxCount = AutoBoss.bossConfig.SpecialTimerText.Length - 1;
                 ticker.enabled = true;
             }
 
@@ -117,15 +95,15 @@ namespace AutoBoss
 
                     if (ticker.type == "day" && Main.dayTime)
                     {
-                        if (AutoBoss.Tools.bossConfig.EnableDayTimerText)
+                        if (AutoBoss.bossConfig.EnableDayTimerText)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.DayTimerText[ticker.count],
+                                TSPlayer.All.SendMessage(AutoBoss.bossConfig.DayTimerText[ticker.count],
                                     Color.YellowGreen);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.DayTimerText[ticker.maxCount],
+                                TSPlayer.All.SendMessage(AutoBoss.bossConfig.DayTimerText[ticker.maxCount],
                                     Color.Crimson);
 
                                 if (dayMinionEnabled)
@@ -134,11 +112,11 @@ namespace AutoBoss
 
                                 BossEvents.startBossBattleDay();
 
-                                if (AutoBoss.Tools.bossConfig.ContinuousBoss)
+                                if (AutoBoss.bossConfig.ContinuousBoss)
                                     ticker.count = -1;
                                 else
                                 {
-                                    TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.DayTimerFinished,
+                                    TSPlayer.All.SendMessage(AutoBoss.bossConfig.DayTimerFinished,
                                         Color.LightBlue);
                                     bossTimer.Enabled = false;
                                 }
@@ -148,15 +126,15 @@ namespace AutoBoss
                     if (ticker.type == "night" && !Main.dayTime && !Main.raining && !Main.bloodMoon && 
                         !Main.eclipse && !Main.pumpkinMoon && !Main.snowMoon && Main.invasionType < 1)
                     {
-                        if (AutoBoss.Tools.bossConfig.EnableNightTimerText)
+                        if (AutoBoss.bossConfig.EnableNightTimerText)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.NightTimerText[ticker.count],
+                                TSPlayer.All.SendMessage(AutoBoss.bossConfig.NightTimerText[ticker.count],
                                     Color.DarkMagenta);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.NightTimerText[ticker.maxCount],
+                                TSPlayer.All.SendMessage(AutoBoss.bossConfig.NightTimerText[ticker.maxCount],
                                    Color.Crimson);
 
                                 if (nightBossEnabled)
@@ -164,11 +142,11 @@ namespace AutoBoss
                                         minionTimer.Enabled = true;
 
                                 BossEvents.startBossBattleNight();
-                                if (AutoBoss.Tools.bossConfig.ContinuousBoss)
+                                if (AutoBoss.bossConfig.ContinuousBoss)
                                     ticker.count = -1;
                                 else
                                 {
-                                    TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.NightTimerFinished,
+                                    TSPlayer.All.SendMessage(AutoBoss.bossConfig.NightTimerFinished,
                                         Color.LightBlue);
                                     bossTimer.Enabled = false;
                                 }
@@ -178,15 +156,15 @@ namespace AutoBoss
                     if (ticker.type == "special" && Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
                             Main.snowMoon || Main.invasionType > 0)
                     {
-                        if (AutoBoss.Tools.bossConfig.EnableSpecialTimerText)
+                        if (AutoBoss.bossConfig.EnableSpecialTimerText)
                         {
                             if (ticker.count != ticker.maxCount)
-                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.SpecialTimerText[ticker.count],
+                                TSPlayer.All.SendMessage(AutoBoss.bossConfig.SpecialTimerText[ticker.count],
                                    Color.Orange);
 
                             else if (ticker.count >= ticker.maxCount)
                             {
-                                TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.SpecialTimerText[ticker.maxCount],
+                                TSPlayer.All.SendMessage(AutoBoss.bossConfig.SpecialTimerText[ticker.maxCount],
                                     Color.Crimson);
 
                                 if (specialMinionEnabled)
@@ -194,12 +172,12 @@ namespace AutoBoss
                                         minionTimer.Enabled = true;
 
                                 BossEvents.startBossBattleSpecial();
-                                if (AutoBoss.Tools.bossConfig.ContinuousBoss)
+                                if (AutoBoss.bossConfig.ContinuousBoss)
                                     ticker.count = -1;
                                 else
                                 {
                                     bossTimer.Enabled = false;
-                                    TSPlayer.All.SendMessage(AutoBoss.Tools.bossConfig.SpecialTimerFinished,
+                                    TSPlayer.All.SendMessage(AutoBoss.bossConfig.SpecialTimerFinished,
                                         Color.LightBlue);
                                 }
                             }
@@ -210,8 +188,8 @@ namespace AutoBoss
         }
 
 
-        public Timer minionTimer = new Timer(new Random().Next(AutoBoss.Tools.bossConfig.MinionsSpawnTimer[0], 
-            AutoBoss.Tools.bossConfig.MinionsSpawnTimer[1]) * 1000);
+        public Timer minionTimer = new Timer(new Random().Next(AutoBoss.bossConfig.MinionsSpawnTimer[0], 
+            AutoBoss.bossConfig.MinionsSpawnTimer[1]) * 1000);
 
         //(AutoBoss.Tools.bossConfig.MinionsSpawnTimer[0] / (AutoBoss.Tools.bossConfig.MinionsSpawnTimer[1] * 1.0)
 
@@ -227,13 +205,6 @@ namespace AutoBoss
             if (Main.raining || Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
                                     Main.snowMoon || Main.invasionSize > 0 && specialMinionEnabled && bossesActive)
                 BossEvents.startSpecialMinionSpawns();
-        }
-
-        public void Dispose()
-        {
-            Log.ConsoleInfo("[AutoBoss+] Timers disposed");
-            bossTimer.Dispose();
-            minionTimer.Dispose();
         }
     }
 }
