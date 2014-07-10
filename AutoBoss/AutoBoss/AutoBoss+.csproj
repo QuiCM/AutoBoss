@@ -8,7 +8,7 @@
     <ProjectGuid>{E1B99F57-9544-46B0-B261-38E50C413735}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Auto_Boss</RootNamespace>
+    <RootNamespace>AutoBoss</RootNamespace>
     <AssemblyName>AutoBoss+</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -52,12 +52,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Boss_Commands.cs" />
-    <Compile Include="Boss_Config.cs" />
-    <Compile Include="Boss_Events.cs" />
-    <Compile Include="Boss_Timer.cs" />
-    <Compile Include="Boss_Tools.cs" />
-    <Compile Include="Main_Boss.cs" />
+    <Compile Include="AbsCommands.cs" />
+    <Compile Include="AbsConfig.cs" />
+    <Compile Include="AbsEvents.cs" />
+    <Compile Include="AbsTimers.cs" />
+    <Compile Include="AbsTools.cs" />
+    <Compile Include="AbsMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

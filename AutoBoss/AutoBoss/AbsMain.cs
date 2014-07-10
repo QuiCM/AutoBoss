@@ -1,11 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Timers;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Terraria;
-using TerrariaApi;
 using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.DB;
@@ -13,12 +9,18 @@ using System.Reflection;
 
 namespace AutoBoss
 {
-    [ApiVersion(1, 15)]
+    [ApiVersion(1, 16)]
     public class AutoBoss : TerrariaPlugin
     {
-        public static BossTools Tools;
+        public static AbsTools Tools;
         public static BossTimer Timers;
-        public static BossConfig bossConfig = new BossConfig();
+        public static Config config = new Config();
+
+        public static Dictionary<int, int> bossList = new Dictionary<int, int>();
+        public static Dictionary<int, int> minionList = new Dictionary<int, int>();
+
+        public static readonly List<Region> ActiveArenas = new List<Region>();
+        public static readonly List<string> InactiveArenas = new List<string>();
 
         #region TerrariaPlugin
         public override Version Version
@@ -43,11 +45,11 @@ namespace AutoBoss
 
         public override void Initialize()
         {
-            Tools = new BossTools();
+            Tools = new AbsTools();
             Timers = new BossTimer();
 
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
-            ServerApi.Hooks.GamePostInitialize.Register(this, AutoBoss.Tools.PostInitialize);
+            ServerApi.Hooks.GamePostInitialize.Register(this, PostInitialize);
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreet);
         }
 
@@ -57,7 +59,7 @@ namespace AutoBoss
             {
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
                 ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnGreet);
-                ServerApi.Hooks.GamePostInitialize.Deregister(this, AutoBoss.Tools.PostInitialize);
+                ServerApi.Hooks.GamePostInitialize.Deregister(this, PostInitialize);
             }
             base.Dispose(disposing);
         }
@@ -67,7 +69,8 @@ namespace AutoBoss
         #endregion
 
         #region OnInitialize
-        public void OnInitialize(EventArgs args)
+
+        private static void OnInitialize(EventArgs args)
         {
 
             Commands.ChatCommands.Add(new Command("boss.root", BossCommands.BossCommand, "boss")
@@ -75,22 +78,35 @@ namespace AutoBoss
                     HelpText = "Toggles automatic boss spawns; Reloads the configuration; Lists bosses and minions spawned by the plugin"
                 });
 
-            string configPath = Path.Combine(TShock.SavePath, "BossConfig.json");
-            (bossConfig = BossConfig.Read(configPath)).Write(configPath);
+            var configPath = Path.Combine(TShock.SavePath, "BossConfig.json");
+            (config = Config.Read(configPath)).Write(configPath);
+        }
+        #endregion
 
+        #region PostInitialize
 
-            Timers.bossTimer.Elapsed += new ElapsedEventHandler(Timers.bossTimerElapsed);
+        private static void PostInitialize(EventArgs args)
+        {
+            Tools.ReloadConfig(true);
 
-            Timers.minionTimer.Elapsed += new ElapsedEventHandler(Timers.MinionElapsedEvent);
+            var day = config.BossToggles["day"];
+            var night = config.BossToggles["night"];
+            var special = config.BossToggles["special"];
+
+            if (config.AutoStartEnabled)
+                Timers.StartBosses(day, night, special, true);
+            else
+                Timers.StartBosses(day, night, special);
         }
         #endregion
 
         #region NetGreetPlayer
-        public void OnGreet(GreetPlayerEventArgs args)
+
+        private static void OnGreet(GreetPlayerEventArgs args)
         {
             if (TShock.Players[args.Who] != null)
             {
-                if (AutoBoss.bossConfig.AutoStartEnabled)
+                if (config.AutoStartEnabled)
                     if (TShock.Players[0].Index == args.Who && TShock.Players.Length < 2)
                         if (!Timers.bossTimer.Enabled)
                             Timers.bossTimer.Enabled = true;
