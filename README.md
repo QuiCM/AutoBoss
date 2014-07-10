@@ -5,8 +5,7 @@ Automatic boss spawner for terraria. Spawns personally selected bosses and minio
 
 To do
 ============
-* Fix heirachy in code. It's currently awful
-* Fix bugs/add suggestions as/if they come
+* Re-add minion spawning
 
 
 
@@ -62,3 +61,7 @@ ChangeLog:
 * Cleaned up a LOT of messy code.
 * Spawns etc now work correctly
 * Basically everything works better
+
+*v3
+-----------
+* Fixed stuff up a lot. Spawns now work, continuous works, various other things work. Only bit missing is minion spawns

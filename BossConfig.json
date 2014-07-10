@@ -1,0 +1,63 @@
+{
+  "AutoStartEnabled": true,
+  "ContinuousBoss": true,
+  "MessageInterval": 10,
+  "EnableDayTimerText": true,
+  "DayTimerText": [
+    "[Day] Initial message",
+    "[Day] Secondary message",
+    "[Day] Third message",
+    "[Day] Etc",
+    "[Day] Bosses spawning"
+  ],
+  "DayTimerFinished": "Boss battle complete.",
+  "EnableNightTimerText": true,
+  "NightTimerText": [
+    "[Night] Initial message",
+    "[Night] Secondary message",
+    "[Night] Third message",
+    "[Night] Etc",
+    "[Night] Bosses spawning"
+  ],
+  "NightTimerFinished": "Boss battle complete.",
+  "EnableSpecialTimerText": false,
+  "SpecialTimerText": [
+    "[Special] Initial message",
+    "[Special] Secondary message",
+    "[Special] Third message",
+    "[Special] Etc",
+    "[Special] Bosses spawning"
+  ],
+  "SpecialTimerFinished": "Boss battle complete.",
+  "AnnounceMinions": false,
+  "MinionsSpawnTimer": [
+    10,
+    30
+  ],
+  "BossArenas": {
+    "boss1": true
+  },
+  "BossToggles": {
+    "day": true,
+    "night": true,
+    "special": false
+  },
+  "MinionToggles": {
+    "day": false,
+    "night": false,
+    "special": false
+  },
+  "DayBosses": {
+    "test": {
+      "1": 10,
+      "22": 10
+    }
+  },
+  "NightBosses": {
+    "nighttest": {
+      "3": 10,
+      "5": 10
+    }
+  },
+  "SpecialBosses": {}
+}
