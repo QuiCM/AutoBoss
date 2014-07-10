@@ -60,6 +60,17 @@ namespace AutoBoss
             _lastBossState = _bossActive;
             _bossActive = AutoBoss.bossList.Any(p => Main.npc[p.Key].type == p.Value && Main.npc[p.Key].active);
 
+            if (TShock.Utils.ActivePlayers() == 0)
+            {
+                lock(AutoBoss.bossList)
+                    foreach (var pair in AutoBoss.bossList)
+                    {
+                        TSPlayer.Server.StrikeNPC(pair.Value, 9999, 1f, 1);
+                        AutoBoss.bossList.Remove(pair.Key);
+                    }
+                return;
+            }
+
             if (_lastBossState && !_bossActive)
                 TShock.Utils.Broadcast(AutoBoss.config.DayTimerFinished, Color.LightBlue);
 

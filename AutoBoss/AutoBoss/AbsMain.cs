@@ -87,16 +87,7 @@ namespace AutoBoss
 
         private static void PostInitialize(EventArgs args)
         {
-            Tools.ReloadConfig(true);
-
-            var day = config.BossToggles["day"];
-            var night = config.BossToggles["night"];
-            var special = config.BossToggles["special"];
-
-            if (config.AutoStartEnabled)
-                Timers.StartBosses(day, night, special, true);
-            else
-                Timers.StartBosses(day, night, special);
+            
         }
         #endregion
 
@@ -107,9 +98,13 @@ namespace AutoBoss
             if (TShock.Players[args.Who] != null)
             {
                 if (config.AutoStartEnabled)
-                    if (TShock.Players[0].Index == args.Who && TShock.Players.Length < 2)
-                        if (!Timers.bossTimer.Enabled)
-                            Timers.bossTimer.Enabled = true;
+                    if (TShock.Utils.ActivePlayers() == 1)
+                    {
+                        var day = config.BossToggles["day"];
+                        var night = config.BossToggles["night"];
+                        var special = config.BossToggles["special"];
+                        Timers.StartBosses(day, night, special, true);
+                    }
             }
         }
         #endregion
