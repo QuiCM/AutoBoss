@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using Terraria;
@@ -30,6 +29,9 @@ namespace AutoBoss
     {
         private readonly Timer _bossTimer = new Timer {Interval = 1000*AutoBoss.config.MessageInterval, Enabled = true};
 
+        private readonly Timer _minionTimer = new Timer {Interval = 1000, Enabled = true};
+
+        private int _minionTicks;
         public static int minionTime;
         public static int minionSpawnCount;
 
@@ -44,6 +46,7 @@ namespace AutoBoss
         private bool _lastBossState;
         private bool _bossActive;
 
+
         public void StartBosses(bool day, bool night, bool special, bool initial = false)
         {
             _dayBossEnabled = day;
@@ -56,7 +59,41 @@ namespace AutoBoss
             if (!initial) return;
             if (_initialized) return;
             _bossTimer.Elapsed += BossTimerElapsed;
+            _minionTimer.Elapsed += MinionTimerElapsed;
             _initialized = true;
+        }
+
+        private void MinionTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (!AutoBoss.Tools.bossesToggled)
+            {
+                _minionTicks = 0;
+                return;
+            }
+            if (!_bossActive)
+            {
+                _minionTicks = 0;
+                return;
+            }
+
+            _minionTicks++;
+            if (_minionTicks != minionTime) return;
+
+            switch (_ticker.type)
+            {
+                case "day":
+                    if (AutoBoss.config.MinionToggles["day"])
+                        BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("day"));
+                    break;
+                case "special":
+                    if (AutoBoss.config.MinionToggles["special"] && _ticker.count == minionTime)
+                        BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("special"));
+                    break;
+                case "night":
+                    if (AutoBoss.config.MinionToggles["night"] && _ticker.count == minionTime)
+                        BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("night"));
+                    break;
+            }
         }
 
         private void BossTimerElapsed(object sender, ElapsedEventArgs e)
@@ -72,6 +109,7 @@ namespace AutoBoss
                         TSPlayer.Server.StrikeNPC(pair.Value, 9999, 1f, 1);
                         AutoBoss.bossList.Remove(pair.Key);
                     }
+                AutoBoss.bossCounts.Clear();
                 return;
             }
 
@@ -118,8 +156,6 @@ namespace AutoBoss
 
             if (_ticker.type == "day")
             {
-                if (AutoBoss.config.MinionToggles["day"] && _ticker.count == minionTime)
-                    BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("day"));
 
                 if (AutoBoss.config.EnableDayTimerText)
                 {
@@ -144,9 +180,6 @@ namespace AutoBoss
 
             if (_ticker.type == "night")
             {
-                if (AutoBoss.config.MinionToggles["night"] && _ticker.count == minionTime)
-                    BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("night"));
-
                 if (AutoBoss.config.EnableNightTimerText)
                 {
                     if (_ticker.count != _ticker.maxCount["night"])
@@ -168,10 +201,7 @@ namespace AutoBoss
             }
 
             if (_ticker.type != "special") return;
-
-            if (AutoBoss.config.MinionToggles["special"] && _ticker.count == minionTime)
-                BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("special"));
-
+            
             if (AutoBoss.config.EnableSpecialTimerText)
             {
                 if (_ticker.count != _ticker.maxCount["special"])
