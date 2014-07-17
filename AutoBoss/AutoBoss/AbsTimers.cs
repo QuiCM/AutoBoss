@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using Terraria;
@@ -27,7 +28,10 @@ namespace AutoBoss
 
     public class BossTimer
     {
-        public readonly Timer bossTimer = new Timer {Interval = 1000*AutoBoss.config.MessageInterval, Enabled = true};
+        private readonly Timer _bossTimer = new Timer {Interval = 1000*AutoBoss.config.MessageInterval, Enabled = true};
+
+        public static int minionTime;
+        public static int minionSpawnCount;
 
         private bool _dayBossEnabled;
         private bool _nightBossEnabled;
@@ -46,12 +50,12 @@ namespace AutoBoss
             _nightBossEnabled = night;
             _specialBossEnabled = special;
 
-            if (!bossTimer.Enabled)
-                bossTimer.Enabled = true;
+            if (!_bossTimer.Enabled)
+                _bossTimer.Enabled = true;
 
             if (!initial) return;
             if (_initialized) return;
-            bossTimer.Elapsed += BossTimerElapsed;
+            _bossTimer.Elapsed += BossTimerElapsed;
             _initialized = true;
         }
 
@@ -72,12 +76,25 @@ namespace AutoBoss
             }
 
             if (_lastBossState && !_bossActive)
-                TShock.Utils.Broadcast(AutoBoss.config.DayTimerFinished, Color.LightBlue);
+            {
+                switch (_ticker.type)
+                {
+                    case "day":
+                        TShock.Utils.Broadcast(AutoBoss.config.DayTimerFinished, Color.LightBlue);
+                        break;
+                    case "night":
+                        TShock.Utils.Broadcast(AutoBoss.config.NightTimerFinished, Color.LightBlue);
+                        break;
+                    case "special":
+                        TShock.Utils.Broadcast(AutoBoss.config.SpecialTimerFinished, Color.LightBlue);
+                        break;
+                }
+            }
 
             if (!AutoBoss.Tools.bossesToggled)
             {
                 Log.ConsoleInfo("[AutoBoss+] Timer Disabled: Boss toggle disabled");
-                bossTimer.Enabled = false;
+                _bossTimer.Enabled = false;
                 AutoBoss.Tools.bossesToggled = false;
                 _ticker.count = -1;
                 return;
@@ -101,6 +118,9 @@ namespace AutoBoss
 
             if (_ticker.type == "day")
             {
+                if (AutoBoss.config.MinionToggles["day"] && _ticker.count == minionTime)
+                    BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("day"));
+
                 if (AutoBoss.config.EnableDayTimerText)
                 {
                     if (_ticker.count != _ticker.maxCount["day"])
@@ -124,6 +144,9 @@ namespace AutoBoss
 
             if (_ticker.type == "night")
             {
+                if (AutoBoss.config.MinionToggles["night"] && _ticker.count == minionTime)
+                    BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("night"));
+
                 if (AutoBoss.config.EnableNightTimerText)
                 {
                     if (_ticker.count != _ticker.maxCount["night"])
@@ -145,6 +168,9 @@ namespace AutoBoss
             }
 
             if (_ticker.type != "special") return;
+
+            if (AutoBoss.config.MinionToggles["special"] && _ticker.count == minionTime)
+                BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("special"));
 
             if (AutoBoss.config.EnableSpecialTimerText)
             {

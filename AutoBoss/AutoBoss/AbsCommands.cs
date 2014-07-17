@@ -70,7 +70,7 @@ namespace AutoBoss
                                     return;
 
                                 PaginationTools.SendPage(args.Player, pageNumber,
-                                    PaginationTools.BuildLinesFromTerms(AutoBoss.bossList.GetList()),
+                                    PaginationTools.BuildLinesFromTerms(AutoBoss.bossCounts.GetList()),
                                     new PaginationTools.Settings
                                     {
                                         HeaderFormat = "Boss List: {0}/{1}",
@@ -92,7 +92,7 @@ namespace AutoBoss
                                     return;
 
                                 PaginationTools.SendPage(args.Player, pageNumber,
-                                    PaginationTools.BuildLinesFromTerms(AutoBoss.minionList.GetList()),
+                                    PaginationTools.BuildLinesFromTerms(AutoBoss.minionCounts.GetList()),
                                     new PaginationTools.Settings
                                     {
                                         HeaderFormat = "Minion List: {0}/{1}",

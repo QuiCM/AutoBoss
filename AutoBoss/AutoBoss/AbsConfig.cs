@@ -7,13 +7,13 @@ namespace AutoBoss
 {
     public class Config
     {
-        public bool AutoStartEnabled = false;
+        public bool AutoStartEnabled;
 
-        public bool ContinuousBoss = false;
+        public bool ContinuousBoss;
 
         public int MessageInterval = 10;
 
-        public bool EnableDayTimerText = false;
+        public bool EnableDayTimerText;
         public string[] DayTimerText =
         {
             "[Day] Initial message",
@@ -24,7 +24,7 @@ namespace AutoBoss
         };
         public string DayTimerFinished = "Boss battle complete.";
 
-        public bool EnableNightTimerText = false;
+        public bool EnableNightTimerText;
         public string[] NightTimerText =
         {
             "[Night] Initial message",
@@ -35,7 +35,7 @@ namespace AutoBoss
         };
         public string NightTimerFinished = "Boss battle complete.";
 
-        public bool EnableSpecialTimerText = false;
+        public bool EnableSpecialTimerText;
         public string[] SpecialTimerText =
         {
             "[Special] Initial message",
@@ -46,10 +46,10 @@ namespace AutoBoss
         };
         public string SpecialTimerFinished = "Boss battle complete.";
 
-        public bool AnnounceMinions = false;
+        public bool AnnounceMinions;
         public int[] MinionsSpawnTimer = { 10, 30 };
 
-        public Dictionary<string, bool> BossArenas = new Dictionary<string, bool>();
+        public Dictionary<string, bool> BossArenas;
 
         public Dictionary<string, bool> BossToggles = new Dictionary<string, bool>
         {
@@ -65,13 +65,16 @@ namespace AutoBoss
             {"special", false}
         };
 
+        public int DifferentMinionsToSpawn;
+        public int[] MinionSpawnCount = {2, 5};
+        public List<int> DayMinionList;
+        public List<int> NightMinionList;
+        public List<int> SpecialMinionList;
 
-        public Dictionary<string, Dictionary<int, int>> DayBosses = new Dictionary<string, Dictionary<int, int>>
-        {
-            {"test", new Dictionary<int, int>{{1, 1}}}
-        };
-        public Dictionary<string, Dictionary<int, int>> NightBosses = new Dictionary<string, Dictionary<int, int>>();
-        public Dictionary<string, Dictionary<int, int>> SpecialBosses = new Dictionary<string, Dictionary<int, int>>();
+
+        public Dictionary<string, Dictionary<int, int>> DayBosses;
+        public Dictionary<string, Dictionary<int, int>> NightBosses;
+        public Dictionary<string, Dictionary<int, int>> SpecialBosses;
         
         public void Write(string path)
         {

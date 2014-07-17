@@ -18,6 +18,8 @@ namespace AutoBoss
 
         public static Dictionary<int, int> bossList = new Dictionary<int, int>();
         public static Dictionary<int, int> minionList = new Dictionary<int, int>();
+        public static Dictionary<string, int> bossCounts = new Dictionary<string, int>();
+        public static Dictionary<string, int> minionCounts = new Dictionary<string, int>(); 
 
         public static readonly List<Region> ActiveArenas = new List<Region>();
         public static readonly List<string> InactiveArenas = new List<string>();
