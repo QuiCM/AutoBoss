@@ -17,38 +17,26 @@ namespace AutoBoss
             var configPath = Path.Combine(TShock.SavePath, "BossConfig.json");
             (AutoBoss.config = Config.Read(configPath)).Write(configPath);
 
-            var invalids = new List<string>();
+            var invalidRegions = new List<string>();
 
-            foreach (var pair in AutoBoss.config.BossArenas)
+            foreach (var arena in AutoBoss.config.BossArenas.Where(a => a.Value))
             {
-                if (pair.Value)
+                var region = TShock.Regions.GetRegionByName(arena.Key);
+                if (region == null)
                 {
-                    if (TShock.Regions.GetRegionByName(pair.Key) != null)
-                    {
-                        if (!AutoBoss.ActiveArenas.Contains(TShock.Regions.GetRegionByName(pair.Key)))
-                            AutoBoss.ActiveArenas.Add(TShock.Regions.GetRegionByName(pair.Key));
-                        continue;
-                    }
-                    invalids.Add(pair.Key);
+                    invalidRegions.Add(arena.Key);
+                    continue;
                 }
-                else if (!AutoBoss.InactiveArenas.Contains(pair.Key))
-                    AutoBoss.InactiveArenas.Add(pair.Key);
-            }
-
-            foreach (var arena in AutoBoss.InactiveArenas.Where(a => !AutoBoss.config.BossArenas.ContainsKey(a)))
-                AutoBoss.InactiveArenas.Remove(arena);
-
-            if (invalids.Count > 0)
-            {
-                var str = string.Join(" ", invalids);
-
-                if (console)
-                    TSPlayer.Server.SendErrorMessage("[AutoBoss+] Invalid regions found: {0}", str);
-                else if (receiver != null)
-                    receiver.SendErrorMessage("[AutoBoss+] Invalid regions found: {0}", str);
+                if (!AutoBoss.ActiveArenas.Contains(region)) AutoBoss.ActiveArenas.Add(region);
             }
 
             arenaCount = AutoBoss.ActiveArenas.Count;
+
+            if (invalidRegions.Count == 0) return;
+            Log.ConsoleError("Invalid regions encountered: " + string.Join(", ", invalidRegions));
+
+            if (!console && receiver != null)
+                receiver.SendErrorMessage("Invalid regions encountered: " + string.Join(", ", invalidRegions));
         }
     }
 
@@ -68,21 +56,6 @@ namespace AutoBoss
                 ret.Add(pair.Key);
             }
             return ret;
-        }
-
-        public static void AddSafe(this Dictionary<int, int> dict, int key, int value, bool minions = false)
-        {
-            if (!dict.ContainsKey(key))
-            {
-                dict.Add(key, value);
-
-                if (minions) AutoBoss.minionCounts.Add(Main.npc[key].name, 1);
-                else AutoBoss.bossCounts.Add(Main.npc[key].name, 1);
-                return;
-            }
-
-            if (minions) AutoBoss.minionCounts[Main.npc[key].name]++;
-            else AutoBoss.bossCounts[Main.npc[key].name]++;
         }
     }
 }

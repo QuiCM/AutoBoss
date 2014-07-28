@@ -86,14 +86,15 @@ namespace AutoBoss
                         BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("day"));
                     break;
                 case "special":
-                    if (AutoBoss.config.MinionToggles["special"] && _ticker.count == minionTime)
+                    if (AutoBoss.config.MinionToggles["special"])
                         BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("special"));
                     break;
                 case "night":
-                    if (AutoBoss.config.MinionToggles["night"] && _ticker.count == minionTime)
+                    if (AutoBoss.config.MinionToggles["night"])
                         BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("night"));
                     break;
             }
+            _minionTicks = 0;
         }
 
         private void BossTimerElapsed(object sender, ElapsedEventArgs e)
@@ -159,7 +160,7 @@ namespace AutoBoss
 
                 if (AutoBoss.config.EnableDayTimerText)
                 {
-                    if (_ticker.count != _ticker.maxCount["day"])
+                    if (_ticker.count < _ticker.maxCount["day"])
                         TSPlayer.All.SendMessage(AutoBoss.config.DayTimerText[_ticker.count],
                             Color.GreenYellow);
 
@@ -168,12 +169,12 @@ namespace AutoBoss
                         TSPlayer.All.SendMessage(AutoBoss.config.DayTimerText[_ticker.maxCount["day"]],
                             Color.Crimson);
 
-                        BossEvents.StartBossBattleDay();
-
                         if (AutoBoss.config.ContinuousBoss)
                             _ticker.count = -1;
                         else
                             AutoBoss.Tools.bossesToggled = false;
+
+                        BossEvents.StartBossBattleDay();
                     }
                 }
             }
@@ -191,11 +192,12 @@ namespace AutoBoss
                         TSPlayer.All.SendMessage(AutoBoss.config.NightTimerText[_ticker.maxCount["night"]],
                             Color.Crimson);
 
-                        BossEvents.StartBossBattleNight();
                         if (AutoBoss.config.ContinuousBoss)
                             _ticker.count = -1;
                         else
                             AutoBoss.Tools.bossesToggled = false;
+
+                        BossEvents.StartBossBattleNight();
                     }
                 }
             }
@@ -213,11 +215,12 @@ namespace AutoBoss
                     TSPlayer.All.SendMessage(AutoBoss.config.SpecialTimerText[_ticker.maxCount["special"]],
                         Color.Crimson);
 
-                    BossEvents.StartBossBattleSpecial();
                     if (AutoBoss.config.ContinuousBoss)
                         _ticker.count = -1;
                     else
                         AutoBoss.Tools.bossesToggled = false;
+
+                    BossEvents.StartBossBattleSpecial();
                 }
             }
         }

@@ -31,18 +31,15 @@ namespace AutoBoss
                     var arenaY = region.Area.Y + (region.Area.Height/2);
 
                     for (var i = 0; i < item.Value; i++)
-                    {
                         npcId = NPC.NewNPC(arenaX * 16, arenaY * 16, item.Key);
-                        AutoBoss.bossList.AddSafe(npcId, item.Key);
-                    }
                 }
 
+                if (npcId == -1) continue;
                 var npc = Main.npc[npcId];
                 broadcast.Add(string.Format("{0}x {1}", item.Value*AutoBoss.ActiveArenas.Count, npc.name));
+                AutoBoss.bossCounts.Add(npc.name, item.Value);
+                AutoBoss.bossList.Add(npcId, item.Key);
             }
-
-            var bcStr = string.Join(", ", broadcast);
-            TShock.Utils.Broadcast("Bosses selected: " + bcStr, Color.Crimson);
 
             if (AutoBoss.config.MinionToggles["day"])
             {
@@ -54,6 +51,9 @@ namespace AutoBoss
 
                 StartMinionSpawns(BossTimer.minionSpawnCount, SelectMinions("day"));
             }
+
+            var bcStr = string.Join(", ", broadcast);
+            TShock.Utils.Broadcast("Bosses selected: " + bcStr, Color.Crimson);
         }
         #endregion
 
@@ -77,14 +77,14 @@ namespace AutoBoss
                     var arenaY = region.Area.Y + (region.Area.Height / 2);
 
                     for (var i = 0; i < item.Value; i++)
-                    {
                         npcId = NPC.NewNPC(arenaX * 16, arenaY * 16, item.Key);
-                        AutoBoss.bossList.AddSafe(npcId, item.Key);
-                    }
                 }
 
+                if (npcId == -1) continue;
                 var npc = Main.npc[npcId];
                 broadcast.Add(string.Format("{0}x {1}", item.Value * AutoBoss.ActiveArenas.Count, npc.name));
+                AutoBoss.bossCounts.Add(npc.name, item.Value);
+                AutoBoss.bossList.Add(npcId, item.Key);
             }
 
             var bcStr = string.Join(", ", broadcast);
@@ -123,14 +123,14 @@ namespace AutoBoss
                     var arenaY = region.Area.Y + (region.Area.Height / 2);
 
                     for (var i = 0; i < item.Value; i++)
-                    {
                         npcId = NPC.NewNPC(arenaX * 16, arenaY * 16, item.Key);
-                        AutoBoss.bossList.AddSafe(npcId, item.Key);
-                    }
                 }
 
+                if (npcId == -1) continue;
                 var npc = Main.npc[npcId];
                 broadcast.Add(string.Format("{0}x {1}", item.Value * AutoBoss.ActiveArenas.Count, npc.name));
+                AutoBoss.bossCounts.Add(npc.name, item.Value);
+                AutoBoss.bossList.Add(npcId, item.Key);
             }
 
             var bcStr = string.Join(", ", broadcast);
@@ -161,13 +161,11 @@ namespace AutoBoss
                     var arenaY = region.Area.Y + (region.Area.Height / 2);
 
                     for (var i = 0; i < count; i++)
-                    {
                         npcId = NPC.NewNPC(arenaX*16, arenaY*16, minion);
-                        AutoBoss.minionList.AddSafe(npcId, minion);
-                    }
                 }
                 if (AutoBoss.config.AnnounceMinions)
                 {
+                    if (npcId == -1) continue;
                     var npc = Main.npc[npcId];
                     broadcast.Add(string.Format("{0}x {1}", count*AutoBoss.ActiveArenas.Count, npc.name));
                 }
@@ -180,7 +178,19 @@ namespace AutoBoss
 
         public static IEnumerable<int> SelectMinions(string type)
         {
-            bool day = (type == "day"), night = (type == "night"), special = (type == "special");
+            bool day = false, night = false, special = false;
+            switch (type)
+            {
+                case "day":
+                    day = true;
+                    break;
+                case "night":
+                    night = true;
+                    break;
+                case "special":
+                    special = true;
+                    break;
+            }
 
             var ret = new List<int>();
             for (var i = 0; i < BossTimer.minionSpawnCount; i++)

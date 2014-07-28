@@ -22,7 +22,6 @@ namespace AutoBoss
         public static Dictionary<string, int> minionCounts = new Dictionary<string, int>(); 
 
         public static readonly List<Region> ActiveArenas = new List<Region>();
-        public static readonly List<string> InactiveArenas = new List<string>();
 
         #region TerrariaPlugin
         public override Version Version
@@ -51,7 +50,6 @@ namespace AutoBoss
             Timers = new BossTimer();
 
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
-            ServerApi.Hooks.GamePostInitialize.Register(this, PostInitialize);
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreet);
         }
 
@@ -61,7 +59,6 @@ namespace AutoBoss
             {
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
                 ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnGreet);
-                ServerApi.Hooks.GamePostInitialize.Deregister(this, PostInitialize);
             }
             base.Dispose(disposing);
         }
@@ -85,14 +82,6 @@ namespace AutoBoss
         }
         #endregion
 
-        #region PostInitialize
-
-        private static void PostInitialize(EventArgs args)
-        {
-            
-        }
-        #endregion
-
         #region NetGreetPlayer
 
         private static void OnGreet(GreetPlayerEventArgs args)
@@ -102,9 +91,11 @@ namespace AutoBoss
                 if (config.AutoStartEnabled)
                     if (TShock.Utils.ActivePlayers() == 1)
                     {
+                        Tools.ReloadConfig(true);
                         var day = config.BossToggles["day"];
                         var night = config.BossToggles["night"];
                         var special = config.BossToggles["special"];
+                        Tools.bossesToggled = true;
                         Timers.StartBosses(day, night, special, true);
                     }
             }
