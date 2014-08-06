@@ -1,0 +1,63 @@
+{
+  "AutoStartEnabled": true,              			//Start when first player joins (i.e., player count moves from 0 to 1)
+  "ContinuousBoss": true,                			//Start another boss fight as soon as the preceding one finishes
+  "MessageInterval": 10,                            //Time (in seconds) between messages being sent
+  "EnableDayTimerText": true,						//Allow messages to be sent during the day
+  "DayTimerText": [									//Day time countdown messages in the order they'll be said (top to bottom)
+    "[Day] Initial message",
+    "[Day] Secondary message",
+    "[Day] Third message",
+    "[Day] Etc",
+    "[Day] Bosses spawning"
+  ],
+  "DayTimerFinished": "Boss battle complete.", 		//Text sent when the battle finishes
+  "EnableNightTimerText": true,						//See EnableDayTimerText; it's the same, but for night.
+  "NightTimerText": [								//See DayTimerText; it's the same, but for night.
+    "[Night] Initial message",
+    "[Night] Secondary message",
+    "[Night] Third message",
+    "[Night] Etc",
+    "[Night] Bosses spawning"
+  ],
+  "NightTimerFinished": "Boss battle complete.",
+  "EnableSpecialTimerText": false,
+  "SpecialTimerText": [
+    "[Special] Initial message",
+    "[Special] Secondary message",
+    "[Special] Third message",
+    "[Special] Etc",
+    "[Special] Bosses spawning"
+  ],
+  "SpecialTimerFinished": "Boss battle complete.",
+  "AnnounceMinions": false,							//Send a message when minions are spawned (not yet implemented)
+  "MinionsSpawnTimer": [							//Min-max values (in seconds) between minion spawns. The actual spawn time is chosen randomly each spawn and
+    10,												//Falls somewhere inbetween the two numbers
+    30
+  ],
+  "BossArenas": {									//List of boss arenas where bosses will spawn. Syntax is "region name": bool. The region must exist
+    "boss1": true
+  },
+  "BossToggles": {									//Which boss timers you want to run. Day lets bosses spawn during day, night during night, special during moons, invasions, etc
+    "day": true,
+    "night": true,
+    "special": false
+  },
+  "MinionToggles": {								//See BossToggles; it's the same, but for minions. (not yet implemented)
+    "day": false,
+    "night": false,
+    "special": false
+  },
+  "DayBosses": {									//List of bosses that will be spawned during the day. Syntax is "name of boss group": { "id": numberToSpawn, "id": numberToSpawn }
+    "test": {
+      "1": 10,
+      "22": 10
+    }
+  },
+  "NightBosses": {									//See DayBosses; it's the same, but for night.
+    "nighttest": {
+      "3": 10,
+      "5": 10
+    }
+  },
+  "SpecialBosses": {}								//This is what it will look like if you let it generate a blank config. Just follow the format above
+}
