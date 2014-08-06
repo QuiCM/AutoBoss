@@ -37,6 +37,8 @@ namespace AutoBoss
 
             if (!console && receiver != null)
                 receiver.SendErrorMessage("Invalid regions encountered: " + string.Join(", ", invalidRegions));
+
+            AutoBoss.Timers = new BossTimer();
         }
     }
 
