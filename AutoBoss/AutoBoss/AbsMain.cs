@@ -47,7 +47,6 @@ namespace AutoBoss
         public override void Initialize()
         {
             Tools = new AbsTools();
-            Timers = new BossTimer();
 
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
             ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreet);
@@ -71,7 +70,6 @@ namespace AutoBoss
 
         private static void OnInitialize(EventArgs args)
         {
-
             Commands.ChatCommands.Add(new Command("boss.root", BossCommands.BossCommand, "boss")
                 {
                     HelpText = "Toggles automatic boss spawns; Reloads the configuration; Lists bosses and minions spawned by the plugin"
@@ -79,6 +77,8 @@ namespace AutoBoss
 
             var configPath = Path.Combine(TShock.SavePath, "BossConfig.json");
             (config = Config.Read(configPath)).Write(configPath);
+
+            Timers = new BossTimer();
         }
         #endregion
 
