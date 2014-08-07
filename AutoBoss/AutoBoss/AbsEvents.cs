@@ -9,39 +9,63 @@ namespace AutoBoss
     public static class BossEvents
     {
         static readonly Random R = new Random();
-        
-        #region DayBattle
 
-        public static void StartBossBattleDay()
+        public static void StartBossBattle(string type)
         {
-            var broadcast = new List<string>();
+            var bossLists = new List<Dictionary<int, int>>();
+            var bossCounter = new Dictionary<string, int>();
 
-            var bossLists = AutoBoss.config.DayBosses.Values.ToList();
+            switch (type)
+            {
+                case "day":
+                    bossLists = AutoBoss.config.DayBosses.Values.ToList();
+                    break;
+                case "night":
+                    bossLists = AutoBoss.config.NightBosses.Values.ToList();
+                    break;
+                case "special":
+                    bossLists = AutoBoss.config.SpecialBosses.Values.ToList();
+                    break;
+            }
 
             var bosses = bossLists[R.Next(0, bossLists.Count)];
             AutoBoss.bossList.Clear();
             AutoBoss.bossCounts.Clear();
 
-            foreach (var item in bosses)
+            foreach (var boss in bosses)
             {
-                var npcId = -1;
+                var npc = TShock.Utils.GetNPCById(boss.Key);
+
+                if (bossCounter.ContainsKey(npc.name))
+                    bossCounter[npc.name]++;
+                else
+                    bossCounter.Add(npc.name, 1);
+
                 foreach (var region in AutoBoss.ActiveArenas)
                 {
                     var arenaX = region.Area.X + (region.Area.Width/2);
                     var arenaY = region.Area.Y + (region.Area.Height/2);
 
-                    for (var i = 0; i < item.Value; i++)
-                        npcId = NPC.NewNPC(arenaX * 16, arenaY * 16, item.Key);
-                }
+                    AutoBoss.bossCounts.Add(npc.name, boss.Value);
+                    int spawnTileX;
+                    int spawnTileY;
+                    TShock.Utils.GetRandomClearTileWithInRange(arenaX, arenaY, 50, 20, out spawnTileX, out spawnTileY);
 
-                if (npcId == -1) continue;
-                var npc = Main.npc[npcId];
-                broadcast.Add(string.Format("{0}x {1}", item.Value*AutoBoss.ActiveArenas.Count, npc.name));
-                AutoBoss.bossCounts.Add(npc.name, item.Value);
-                AutoBoss.bossList.Add(npcId, item.Key);
+                    var npcid = NPC.NewNPC(spawnTileX*16, spawnTileY*16, boss.Key);
+                    // This is for special slimes
+                    Main.npc[npcid].SetDefaults(npc.name);
+
+                    AutoBoss.bossList.Add(npcid, boss.Key);
+                }
             }
 
-            if (AutoBoss.config.MinionToggles["day"])
+            var broadcast =
+                bossCounter.Select(kvp => string.Format("{0}x {1}", kvp.Value * AutoBoss.ActiveArenas.Count, kvp.Key))
+                    .ToList();
+
+            TShock.Utils.Broadcast("Bosses selected: " + string.Join(", ", broadcast), Color.Crimson);
+
+            if (AutoBoss.config.MinionToggles[type])
             {
                 BossTimer.minionTime = R.Next(AutoBoss.config.MinionsSpawnTimer[0],
                     AutoBoss.config.MinionsSpawnTimer[1] + 1);
@@ -49,135 +73,39 @@ namespace AutoBoss
                 BossTimer.minionSpawnCount = R.Next(AutoBoss.config.MinionSpawnCount[0],
                     AutoBoss.config.MinionSpawnCount[1] + 1);
 
-                StartMinionSpawns(SelectMinions("day"));
-            }
-
-            var bcStr = string.Join(", ", broadcast);
-            TShock.Utils.Broadcast("Bosses selected: " + bcStr, Color.Crimson);
-        }
-        #endregion
-
-        #region SpecialBattle
-        public static void StartBossBattleSpecial()
-        {
-            var broadcast = new List<string>();
-
-            var bossLists = AutoBoss.config.SpecialBosses.Values.ToList();
-
-            var bosses = bossLists[R.Next(0, bossLists.Count)];
-            AutoBoss.bossList.Clear();
-            AutoBoss.bossCounts.Clear();
-
-            foreach (var item in bosses)
-            {
-                var npcId = -1;
-                foreach (var region in AutoBoss.ActiveArenas)
-                {
-                    var arenaX = region.Area.X + (region.Area.Width / 2);
-                    var arenaY = region.Area.Y + (region.Area.Height / 2);
-
-                    for (var i = 0; i < item.Value; i++)
-                        npcId = NPC.NewNPC(arenaX * 16, arenaY * 16, item.Key);
-                }
-
-                if (npcId == -1) continue;
-                var npc = Main.npc[npcId];
-                broadcast.Add(string.Format("{0}x {1}", item.Value * AutoBoss.ActiveArenas.Count, npc.name));
-                AutoBoss.bossCounts.Add(npc.name, item.Value);
-                AutoBoss.bossList.Add(npcId, item.Key);
-            }
-
-            var bcStr = string.Join(", ", broadcast);
-            TShock.Utils.Broadcast("Bosses selected: " + bcStr, Color.Crimson);
-
-            if (AutoBoss.config.MinionToggles["special"])
-            {
-                BossTimer.minionTime = R.Next(AutoBoss.config.MinionsSpawnTimer[0],
-                    AutoBoss.config.MinionsSpawnTimer[1] + 1);
-
-                BossTimer.minionSpawnCount = R.Next(AutoBoss.config.MinionSpawnCount[0],
-                    AutoBoss.config.MinionSpawnCount[1] + 1);
-
-                StartMinionSpawns(SelectMinions("special"));
+                StartMinionSpawns(SelectMinions(type));
             }
         }
-        #endregion
-
-        #region NightBattle
-        public static void StartBossBattleNight()
-        {
-            var broadcast = new List<string>();
-
-            var bossLists = AutoBoss.config.NightBosses.Values.ToList();
-
-            var bosses = bossLists[R.Next(0, bossLists.Count)];
-            AutoBoss.bossList.Clear();
-            AutoBoss.bossCounts.Clear();
-
-            foreach (var item in bosses)
-            {
-                var npcId = -1;
-                foreach (var region in AutoBoss.ActiveArenas)
-                {
-                    var arenaX = region.Area.X + (region.Area.Width / 2);
-                    var arenaY = region.Area.Y + (region.Area.Height / 2);
-
-                    for (var i = 0; i < item.Value; i++)
-                        npcId = NPC.NewNPC(arenaX * 16, arenaY * 16, item.Key);
-                }
-
-                if (npcId == -1) continue;
-                var npc = Main.npc[npcId];
-                broadcast.Add(string.Format("{0}x {1}", item.Value * AutoBoss.ActiveArenas.Count, npc.name));
-                AutoBoss.bossCounts.Add(npc.name, item.Value);
-                AutoBoss.bossList.Add(npcId, item.Key);
-            }
-
-            var bcStr = string.Join(", ", broadcast);
-            TShock.Utils.Broadcast("Bosses selected: " + bcStr, Color.Crimson);
-
-            if (AutoBoss.config.MinionToggles["night"])
-            {
-                BossTimer.minionTime = R.Next(AutoBoss.config.MinionsSpawnTimer[0],
-                    AutoBoss.config.MinionsSpawnTimer[1] + 1);
-
-                BossTimer.minionSpawnCount = R.Next(AutoBoss.config.MinionSpawnCount[0],
-                    AutoBoss.config.MinionSpawnCount[1] + 1);
-
-                StartMinionSpawns(SelectMinions("night"));
-            }
-        }
-        #endregion
 
         public static void StartMinionSpawns(IEnumerable<int> types)
         {
-            var broadcast = new List<string>();
-            //                              Type  Count, Main.npc position
-            var minionCounter = new Dictionary<int, int[]>();
+            var minionCounter = new Dictionary<string, int>();
+
             foreach (var minion in types)
             {
-                var npcId = -1;
+                var npc = TShock.Utils.GetNPCById(minion);
+
+                //if (npc.name == string.Empty)
+                //    continue;
+
+                if (minionCounter.ContainsKey(npc.name))
+                    minionCounter[npc.name]++;
+                else
+                    minionCounter.Add(npc.name, 1);
+
                 foreach (var region in AutoBoss.ActiveArenas)
                 {
                     var arenaX = region.Area.X + (region.Area.Width/2);
                     var arenaY = region.Area.Y + (region.Area.Height/2);
 
-                    var offsetX = R.Next(0, 25);
-                    var offsetY = R.Next(0, 25);
-                    npcId = NPC.NewNPC((arenaX*16) + offsetX, (arenaY*16) + offsetY, minion);
+                    TSPlayer.Server.SpawnNPC(minion, npc.name, 1, arenaX, arenaY, 50, 20);
                 }
-                if (!minionCounter.ContainsKey(minion))
-                    minionCounter.Add(minion, new[] {1, npcId});
-                else
-                    minionCounter[minion][0]++;
             }
             if (!AutoBoss.config.AnnounceMinions) return;
 
-            broadcast.AddRange(from kvp in minionCounter
-                where kvp.Value.Length == 2
-                where kvp.Value[1] >= 0 && kvp.Value[1] <= Main.maxNPCs
-                select
-                    string.Format("{0}x {1}", kvp.Value[0]*AutoBoss.ActiveArenas.Count, Main.npc[kvp.Value[1]].name));
+            var broadcast =
+                minionCounter.Select(kvp => string.Format("{0}x {1}", kvp.Value*AutoBoss.ActiveArenas.Count, kvp.Key))
+                    .ToList();
 
             TShock.Utils.Broadcast("Minions selected: " + string.Join(", ", broadcast), Color.Crimson);
         }
@@ -203,11 +131,11 @@ namespace AutoBoss
             for (var i = 0; i < BossTimer.minionSpawnCount; i++)
             {
                 if (day)
-                    ret.AddCheck(R.Next(0, AutoBoss.config.DayMinionList.Count));
+                    ret.AddCheck(AutoBoss.config.DayMinionList[R.Next(0, AutoBoss.config.DayMinionList.Count)]);
                 if (night)
-                    ret.AddCheck(R.Next(0, AutoBoss.config.NightMinionList.Count));
+                    ret.AddCheck(AutoBoss.config.NightMinionList[R.Next(0, AutoBoss.config.NightMinionList.Count)]);
                 if (special)
-                    ret.AddCheck(R.Next(0, AutoBoss.config.SpecialMinionList.Count));
+                    ret.AddCheck(AutoBoss.config.SpecialMinionList[R.Next(0, AutoBoss.config.SpecialMinionList.Count)]);
             }
 
             return ret;

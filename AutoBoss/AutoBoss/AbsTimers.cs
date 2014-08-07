@@ -174,7 +174,7 @@ namespace AutoBoss
                         else
                             AutoBoss.Tools.bossesToggled = false;
 
-                        BossEvents.StartBossBattleDay();
+                        BossEvents.StartBossBattle("day");
                     }
                 }
             }
@@ -197,7 +197,7 @@ namespace AutoBoss
                         else
                             AutoBoss.Tools.bossesToggled = false;
 
-                        BossEvents.StartBossBattleNight();
+                        BossEvents.StartBossBattle("night");
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace AutoBoss
                     else
                         AutoBoss.Tools.bossesToggled = false;
 
-                    BossEvents.StartBossBattleSpecial();
+                    BossEvents.StartBossBattle("special");
                 }
             }
         }
