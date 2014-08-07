@@ -83,15 +83,15 @@ namespace AutoBoss
             {
                 case "day":
                     if (AutoBoss.config.MinionToggles["day"])
-                        BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("day"));
+                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions("day"));
                     break;
                 case "special":
                     if (AutoBoss.config.MinionToggles["special"])
-                        BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("special"));
+                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions("special"));
                     break;
                 case "night":
                     if (AutoBoss.config.MinionToggles["night"])
-                        BossEvents.StartMinionSpawns(minionSpawnCount, BossEvents.SelectMinions("night"));
+                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions("night"));
                     break;
             }
             _minionTicks = 0;

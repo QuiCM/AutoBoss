@@ -32,7 +32,13 @@ namespace AutoBoss
 
             arenaCount = AutoBoss.ActiveArenas.Count;
 
-            if (invalidRegions.Count == 0) return;
+
+
+            if (invalidRegions.Count == 0)
+            {
+                AutoBoss.Timers = new BossTimer();
+                return;
+            }
             Log.ConsoleError("Invalid regions encountered: " + string.Join(", ", invalidRegions));
 
             if (!console && receiver != null)
@@ -56,6 +62,15 @@ namespace AutoBoss
                 ret.Add(pair.Key);
             }
             return ret;
+        }
+
+        public static void AddCheck(this List<int> list, int type)
+        {
+            //Lowest npc id -> highest npc id
+            if (type < -65 || type > Main.maxNPCTypes)
+                return;
+
+            list.Add(type);
         }
     }
 }
