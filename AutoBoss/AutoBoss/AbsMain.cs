@@ -92,9 +92,9 @@ namespace AutoBoss
                     if (TShock.Utils.ActivePlayers() == 1)
                     {
                         Tools.ReloadConfig(true);
-                        var day = config.BossToggles["day"];
-                        var night = config.BossToggles["night"];
-                        var special = config.BossToggles["special"];
+                        var day = config.BossToggles[BattleType.Day];
+                        var night = config.BossToggles[BattleType.Night];
+                        var special = config.BossToggles[BattleType.Special];
                         Tools.bossesToggled = true;
                         Timers.StartBosses(day, night, special, true);
                     }

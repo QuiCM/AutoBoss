@@ -9,16 +9,16 @@ namespace AutoBoss
     public class TimerObj
     {
         public int count;
-        public string type;
+        public BattleType type;
 
-        public readonly Dictionary<string, int> maxCount = new Dictionary<string, int>
+        public readonly Dictionary<BattleType, int> maxCount = new Dictionary<BattleType, int>
         {
-            {"day", AutoBoss.config.DayTimerText.Length - 1},
-            {"night", AutoBoss.config.NightTimerText.Length - 1},
-            {"special", AutoBoss.config.SpecialTimerText.Length - 1}
+            {BattleType.Day, AutoBoss.config.DayTimerText.Length - 1},
+            {BattleType.Night, AutoBoss.config.NightTimerText.Length - 1},
+            {BattleType.Special, AutoBoss.config.SpecialTimerText.Length - 1}
         };
 
-        public TimerObj(int c, string t)
+        public TimerObj(int c, BattleType t)
         {
             count = c;
             type = t;
@@ -41,7 +41,7 @@ namespace AutoBoss
 
         private bool _initialized;
 
-        private readonly TimerObj _ticker = new TimerObj(-1, "day");
+        private readonly TimerObj _ticker = new TimerObj(-1, BattleType.Day);
 
         private bool _lastBossState;
         private bool _bossActive;
@@ -81,17 +81,17 @@ namespace AutoBoss
 
             switch (_ticker.type)
             {
-                case "day":
-                    if (AutoBoss.config.MinionToggles["day"])
-                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions("day"));
+                case BattleType.Day:
+                    if (AutoBoss.config.MinionToggles[BattleType.Day])
+                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions(BattleType.Day));
                     break;
-                case "special":
-                    if (AutoBoss.config.MinionToggles["special"])
-                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions("special"));
+                case BattleType.Special:
+                    if (AutoBoss.config.MinionToggles[BattleType.Special])
+                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions(BattleType.Special));
                     break;
-                case "night":
-                    if (AutoBoss.config.MinionToggles["night"])
-                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions("night"));
+                case BattleType.Night:
+                    if (AutoBoss.config.MinionToggles[BattleType.Night])
+                        BossEvents.StartMinionSpawns(BossEvents.SelectMinions(BattleType.Night));
                     break;
             }
             _minionTicks = 0;
@@ -118,13 +118,13 @@ namespace AutoBoss
             {
                 switch (_ticker.type)
                 {
-                    case "day":
+                    case BattleType.Day:
                         TShock.Utils.Broadcast(AutoBoss.config.DayTimerFinished, Color.LightBlue);
                         break;
-                    case "night":
+                    case BattleType.Night:
                         TShock.Utils.Broadcast(AutoBoss.config.NightTimerFinished, Color.LightBlue);
                         break;
-                    case "special":
+                    case BattleType.Special:
                         TShock.Utils.Broadcast(AutoBoss.config.SpecialTimerFinished, Color.LightBlue);
                         break;
                 }
@@ -143,30 +143,30 @@ namespace AutoBoss
                 return;
 
             if (Main.dayTime && _dayBossEnabled)
-                _ticker.type = "day";
+                _ticker.type = BattleType.Day;
 
             if (!Main.dayTime && !Main.bloodMoon && !Main.eclipse && !Main.pumpkinMoon &&
                 !Main.snowMoon && Main.invasionType == 0 && _nightBossEnabled)
-                _ticker.type = "night";
+                _ticker.type = BattleType.Night;
 
             if (Main.bloodMoon || Main.eclipse || Main.pumpkinMoon ||
                 Main.snowMoon || Main.invasionType > 0 && _specialBossEnabled)
-                _ticker.type = "special";
+                _ticker.type = BattleType.Special;
 
             _ticker.count++;
 
-            if (_ticker.type == "day")
+            if (_ticker.type == BattleType.Day)
             {
 
                 if (AutoBoss.config.EnableDayTimerText)
                 {
-                    if (_ticker.count < _ticker.maxCount["day"])
+                    if (_ticker.count < _ticker.maxCount[BattleType.Day])
                         TSPlayer.All.SendMessage(AutoBoss.config.DayTimerText[_ticker.count],
                             Color.GreenYellow);
 
-                    else if (_ticker.count >= _ticker.maxCount["day"])
+                    else if (_ticker.count >= _ticker.maxCount[BattleType.Day])
                     {
-                        TSPlayer.All.SendMessage(AutoBoss.config.DayTimerText[_ticker.maxCount["day"]],
+                        TSPlayer.All.SendMessage(AutoBoss.config.DayTimerText[_ticker.maxCount[BattleType.Day]],
                             Color.Crimson);
 
                         if (AutoBoss.config.ContinuousBoss)
@@ -174,22 +174,22 @@ namespace AutoBoss
                         else
                             AutoBoss.Tools.bossesToggled = false;
 
-                        BossEvents.StartBossBattle("day");
+                        BossEvents.StartBossBattle(BattleType.Day);
                     }
                 }
             }
 
-            if (_ticker.type == "night")
+            if (_ticker.type == BattleType.Night)
             {
                 if (AutoBoss.config.EnableNightTimerText)
                 {
-                    if (_ticker.count != _ticker.maxCount["night"])
+                    if (_ticker.count != _ticker.maxCount[BattleType.Night])
                         TSPlayer.All.SendMessage(AutoBoss.config.NightTimerText[_ticker.count],
                             Color.DarkMagenta);
 
-                    else if (_ticker.count >= _ticker.maxCount["night"])
+                    else if (_ticker.count >= _ticker.maxCount[BattleType.Night])
                     {
-                        TSPlayer.All.SendMessage(AutoBoss.config.NightTimerText[_ticker.maxCount["night"]],
+                        TSPlayer.All.SendMessage(AutoBoss.config.NightTimerText[_ticker.maxCount[BattleType.Night]],
                             Color.Crimson);
 
                         if (AutoBoss.config.ContinuousBoss)
@@ -197,22 +197,22 @@ namespace AutoBoss
                         else
                             AutoBoss.Tools.bossesToggled = false;
 
-                        BossEvents.StartBossBattle("night");
+                        BossEvents.StartBossBattle(BattleType.Night);
                     }
                 }
             }
 
-            if (_ticker.type != "special") return;
+            if (_ticker.type != BattleType.Special) return;
             
             if (AutoBoss.config.EnableSpecialTimerText)
             {
-                if (_ticker.count != _ticker.maxCount["special"])
+                if (_ticker.count != _ticker.maxCount[BattleType.Special])
                     TSPlayer.All.SendMessage(AutoBoss.config.SpecialTimerText[_ticker.count],
                         Color.Orange);
 
-                else if (_ticker.count >= _ticker.maxCount["special"])
+                else if (_ticker.count >= _ticker.maxCount[BattleType.Special])
                 {
-                    TSPlayer.All.SendMessage(AutoBoss.config.SpecialTimerText[_ticker.maxCount["special"]],
+                    TSPlayer.All.SendMessage(AutoBoss.config.SpecialTimerText[_ticker.maxCount[BattleType.Special]],
                         Color.Crimson);
 
                     if (AutoBoss.config.ContinuousBoss)
@@ -220,7 +220,7 @@ namespace AutoBoss
                     else
                         AutoBoss.Tools.bossesToggled = false;
 
-                    BossEvents.StartBossBattle("special");
+                    BossEvents.StartBossBattle(BattleType.Special);
                 }
             }
         }

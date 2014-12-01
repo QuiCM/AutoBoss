@@ -59,6 +59,7 @@
     <Compile Include="AbsTimers.cs" />
     <Compile Include="AbsTools.cs" />
     <Compile Include="AbsMain.cs" />
+    <Compile Include="BattleType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

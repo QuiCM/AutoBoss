@@ -8,22 +8,22 @@ namespace AutoBoss
 {
     public static class BossEvents
     {
-        static readonly Random R = new Random();
+        private static readonly Random R = new Random();
 
-        public static void StartBossBattle(string type)
+        public static void StartBossBattle(BattleType type)
         {
             var bossLists = new List<Dictionary<int, int>>();
             var bossCounter = new Dictionary<string, int>();
 
             switch (type)
             {
-                case "day":
+                case BattleType.Day:
                     bossLists = AutoBoss.config.DayBosses.Values.ToList();
                     break;
-                case "night":
+                case BattleType.Night:
                     bossLists = AutoBoss.config.NightBosses.Values.ToList();
                     break;
-                case "special":
+                case BattleType.Special:
                     bossLists = AutoBoss.config.SpecialBosses.Values.ToList();
                     break;
             }
@@ -32,35 +32,39 @@ namespace AutoBoss
             AutoBoss.bossList.Clear();
             AutoBoss.bossCounts.Clear();
 
-            foreach (var boss in bosses)
+            foreach (var bossPair in bosses)
             {
-                var npc = TShock.Utils.GetNPCById(boss.Key);
-
-                if (bossCounter.ContainsKey(npc.name))
-                    bossCounter[npc.name]++;
-                else
-                    bossCounter.Add(npc.name, 1);
-
-                foreach (var region in AutoBoss.ActiveArenas)
+                for (var i = 0; i < bossPair.Value; i++)
                 {
-                    var arenaX = region.Area.X + (region.Area.Width/2);
-                    var arenaY = region.Area.Y + (region.Area.Height/2);
+                    var npc = TShock.Utils.GetNPCById(bossPair.Key);
 
-                    AutoBoss.bossCounts.Add(npc.name, boss.Value);
-                    int spawnTileX;
-                    int spawnTileY;
-                    TShock.Utils.GetRandomClearTileWithInRange(arenaX, arenaY, 50, 20, out spawnTileX, out spawnTileY);
+                    if (bossCounter.ContainsKey(npc.name))
+                        bossCounter[npc.name]++;
+                    else
+                        bossCounter.Add(npc.name, 1);
 
-                    var npcid = NPC.NewNPC(spawnTileX*16, spawnTileY*16, boss.Key);
-                    // This is for special slimes
-                    Main.npc[npcid].SetDefaults(npc.name);
+                    foreach (var region in AutoBoss.ActiveArenas)
+                    {
+                        var arenaX = region.Area.X + (region.Area.Width/2);
+                        var arenaY = region.Area.Y + (region.Area.Height/2);
 
-                    AutoBoss.bossList.Add(npcid, boss.Key);
+                        AutoBoss.bossCounts.Add(npc.name, bossPair.Value);
+                        int spawnTileX;
+                        int spawnTileY;
+                        TShock.Utils.GetRandomClearTileWithInRange(arenaX, arenaY, 50, 20, out spawnTileX,
+                            out spawnTileY);
+
+                        var npcid = NPC.NewNPC(spawnTileX*16, spawnTileY*16, bossPair.Key);
+                        // This is for special slimes
+                        Main.npc[npcid].SetDefaults(npc.name);
+
+                        AutoBoss.bossList.Add(npcid, bossPair.Key);
+                    }
                 }
             }
 
             var broadcast =
-                bossCounter.Select(kvp => string.Format("{0}x {1}", kvp.Value * AutoBoss.ActiveArenas.Count, kvp.Key))
+                bossCounter.Select(kvp => string.Format("{0}x {1}", kvp.Value*AutoBoss.ActiveArenas.Count, kvp.Key))
                     .ToList();
 
             TShock.Utils.Broadcast("Bosses selected: " + string.Join(", ", broadcast), Color.Crimson);
@@ -85,9 +89,6 @@ namespace AutoBoss
             {
                 var npc = TShock.Utils.GetNPCById(minion);
 
-                //if (npc.name == string.Empty)
-                //    continue;
-
                 if (minionCounter.ContainsKey(npc.name))
                     minionCounter[npc.name]++;
                 else
@@ -111,18 +112,18 @@ namespace AutoBoss
         }
 
 
-        public static IEnumerable<int> SelectMinions(string type)
+        public static IEnumerable<int> SelectMinions(BattleType type)
         {
             bool day = false, night = false, special = false;
             switch (type)
             {
-                case "day":
+                case BattleType.Day:
                     day = true;
                     break;
-                case "night":
+                case BattleType.Night:
                     night = true;
                     break;
-                case "special":
+                case BattleType.Special:
                     special = true;
                     break;
             }

@@ -51,18 +51,18 @@ namespace AutoBoss
 
         public Dictionary<string, bool> BossArenas;
 
-        public Dictionary<string, bool> BossToggles = new Dictionary<string, bool>
+        public Dictionary<BattleType, bool> BossToggles = new Dictionary<BattleType, bool>
         {
-            {"day", false},
-            {"night", false},
-            {"special", false}
+            {BattleType.Day, false},
+            {BattleType.Night, false},
+            {BattleType.Special, false}
         };
 
-        public Dictionary<string, bool> MinionToggles = new Dictionary<string, bool>
+        public Dictionary<BattleType, bool> MinionToggles = new Dictionary<BattleType, bool>
         {
-            {"day", false},
-            {"night", false},
-            {"special", false}
+            {BattleType.Day, false},
+            {BattleType.Night, false},
+            {BattleType.Special, false}
         };
 
         public int DifferentMinionsToSpawn;

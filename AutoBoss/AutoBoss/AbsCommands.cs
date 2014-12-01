@@ -31,9 +31,9 @@ namespace AutoBoss
                             return;
                         }
 
-                        var day = AutoBoss.config.BossToggles["day"];
-                        var night = AutoBoss.config.BossToggles["night"];
-                        var special = AutoBoss.config.BossToggles["special"];
+                        var day = AutoBoss.config.BossToggles[BattleType.Day];
+                        var night = AutoBoss.config.BossToggles[BattleType.Night];
+                        var special = AutoBoss.config.BossToggles[BattleType.Special];
                         AutoBoss.Timers.StartBosses(day, night, special, true);
                     }
 
