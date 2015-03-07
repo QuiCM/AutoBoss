@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace AutoBoss
 {
-	[ApiVersion(1, 16)]
+	[ApiVersion(1, 17)]
 	public class AutoBoss : TerrariaPlugin
 	{
 		public static AbsTools Tools;
@@ -103,7 +103,7 @@ namespace AutoBoss
 					Tools.bossesToggled = true;
 					Timers.StartBosses(day, night, special, true);
 
-					Log.ConsoleInfo("[AutoBoss+] Timer started: Autostart");
+					TShock.Log.ConsoleInfo("[AutoBoss+] Timer started: Autostart");
 				}
 			}
 		}
@@ -123,7 +123,7 @@ namespace AutoBoss
 				bossCounts.Clear();
 				Timers.Stop();
 
-				Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players are online");
+				TShock.Log.ConsoleInfo("[AutoBoss+] Timer Disabled: No players are online");
 			}
 		}
 

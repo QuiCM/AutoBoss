@@ -39,7 +39,7 @@ namespace AutoBoss
 				AutoBoss.Timers = new BossTimer();
 				return;
 			}
-			Log.ConsoleError("Invalid regions encountered: " + string.Join(", ", invalidRegions));
+			TShock.Log.ConsoleError("Invalid regions encountered: " + string.Join(", ", invalidRegions));
 
 			if (!console && receiver != null)
 				receiver.SendErrorMessage("Invalid regions encountered: " + string.Join(", ", invalidRegions));
