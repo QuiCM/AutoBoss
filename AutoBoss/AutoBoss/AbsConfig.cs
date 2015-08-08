@@ -11,6 +11,8 @@ namespace AutoBoss
 
 		public bool ContinuousBoss;
 
+		public bool OneWave;
+
 		public int MessageInterval = 10;
 
 		public bool EnableDayTimerText;

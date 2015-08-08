@@ -31,9 +31,7 @@ namespace AutoBoss
 			}
 
 			arenaCount = AutoBoss.ActiveArenas.Count;
-
-
-
+			
 			if (invalidRegions.Count == 0)
 			{
 				AutoBoss.Timers = new BossTimer();

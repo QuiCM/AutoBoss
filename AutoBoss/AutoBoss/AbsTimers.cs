@@ -127,7 +127,6 @@ namespace AutoBoss
 			{
 				TShock.Log.ConsoleInfo("[AutoBoss+] Timer Disabled: Boss toggle disabled");
 				_bossTimer.Enabled = false;
-				AutoBoss.Tools.bossesToggled = false;
 				_ticker.count = -1;
 				return;
 			}
@@ -200,8 +199,7 @@ namespace AutoBoss
 			if (AutoBoss.config.EnableSpecialTimerText)
 			{
 				if (_ticker.count != _ticker.maxCount[BattleType.Special])
-					TSPlayer.All.SendMessage(AutoBoss.config.SpecialTimerText[_ticker.count],
-						Color.Orange);
+					TSPlayer.All.SendMessage(AutoBoss.config.SpecialTimerText[_ticker.count], Color.Orange);
 
 				else if (_ticker.count >= _ticker.maxCount[BattleType.Special])
 				{
