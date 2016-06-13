@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace AutoBoss
 {
-	[ApiVersion(1, 22)]
+	[ApiVersion(1, 23)]
 	public class AutoBoss : TerrariaPlugin
 	{
 		public static AbsTools Tools;
